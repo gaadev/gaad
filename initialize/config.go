@@ -7,6 +7,7 @@ import (
 	"github.com/spf13/viper"
 	"io"
 	"os"
+	"strings"
 )
 
 var (
@@ -66,6 +67,12 @@ func InitFile() {
 
 	// Logging to a file.
 	logFile := viper.GetString("app.logFile")
+	//先创建日志文件夹
+	pos := strings.LastIndex(logFile, "/")
+	if pos != -1 {
+		dir := logFile[:pos]
+		common.CreateFile(dir)
+	}
 	f, _ := os.Create(logFile)
 	gin.DefaultWriter = io.MultiWriter(f)
 }

@@ -16,6 +16,7 @@ func main() {
 	initialize.InitConfig()
 
 	initialize.InitFile()
+
 	//初始化http路由，并启动http服务器
 	routers.InitWebRouters()
 

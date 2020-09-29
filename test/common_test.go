@@ -2,11 +2,13 @@ package test
 
 import (
 	"fmt"
+	"gaad/common"
 	"gaad/db/boltdb"
 	"gaad/db/sqlitedb"
 	"github.com/jinzhu/gorm"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/satori/go.uuid"
+	"strings"
 	"testing"
 )
 
@@ -63,5 +65,18 @@ func TestSqlitedb2(t *testing.T) {
 	sqlitedb.First(&pro, "code = ?", "L1212")
 
 	fmt.Printf("%v", pro)
+
+}
+
+func TestCreateFile(t *testing.T) {
+	common.CreateFile("log/log.log")
+}
+
+func TestTruncation(t *testing.T) {
+	var str = "aaaa/log/log.log/"
+	pos := strings.LastIndex(str, "/")
+	if pos != -1 {
+		fmt.Println(str[:pos])
+	}
 
 }
