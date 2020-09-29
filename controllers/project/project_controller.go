@@ -25,7 +25,7 @@ func Deploy(c *gin.Context) {
 	//	time.Sleep(time.Duration(1)*time.Second)
 	//	f.WriteString("Hello world\n")
 	//}
-	par:=[]string{
+	par := []string{
 		"-c",
 		"devops run java --git-url 'http://192.168.10.235/unsun/biz/jshyun-console.git' --git-branch test --java-opts '-Dprofile=test -Dconfig-registry=core-config' --workspace unsun  console-advertisement",
 	}
@@ -39,12 +39,10 @@ func Deploy(c *gin.Context) {
 
 }
 
-
-
 // 查看全部在线用户
 func Display(c *gin.Context) {
-	var(
-		count int
+	var (
+		count   int
 		builder strings.Builder
 	)
 	startStr := c.Query("start")
@@ -66,7 +64,7 @@ func Display(c *gin.Context) {
 	}()
 	s := bufio.NewScanner(f)
 	count += start
-	for i := 0; i < start; i++{
+	for i := 0; i < start; i++ {
 		s.Scan()
 	}
 
@@ -83,13 +81,9 @@ func Display(c *gin.Context) {
 
 	data := make(map[string]interface{})
 
-
-
 	data["data"] = builder.String()
 	data["end"] = count
 
 	controllers.Response(c, common.OK, "", data)
 
 }
-
-

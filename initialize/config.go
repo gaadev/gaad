@@ -7,7 +7,6 @@ import (
 	"github.com/spf13/viper"
 	"io"
 	"os"
-
 )
 
 var (
@@ -25,8 +24,6 @@ func SetConfigPath(path string) {
 func InitConfig() {
 
 	runEnv := os.Getenv("RUN_ENV")
-
-	//path := configPath
 
 	switch runEnv {
 	case "local":
@@ -55,15 +52,12 @@ func InitConfig() {
 		panic(fmt.Errorf("Fatal error config file: %s \n", err))
 	}
 
-	fmt.Println("config app:", viper.Get("app"))
-	fmt.Println("config redis:", viper.Get("redis"))
+	fmt.Println("config gaad config content:", viper.Get("app"))
 
 	ServerIp = common.GetServerIp()
 	HttpPort = viper.GetString("app.httpPort")
 
 }
-
-
 
 // 初始化日志
 func InitFile() {
@@ -75,4 +69,3 @@ func InitFile() {
 	f, _ := os.Create(logFile)
 	gin.DefaultWriter = io.MultiWriter(f)
 }
-

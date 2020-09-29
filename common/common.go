@@ -1,50 +1,11 @@
 package common
 
 import (
-	"crypto/md5"
-	"encoding/json"
 	"errors"
 	"fmt"
-	uuid "github.com/satori/go.uuid"
 	"net"
 	"reflect"
-	"runtime"
-	"strconv"
-	"strings"
-	"time"
 )
-
-func GenerateAuthCode(account string) string {
-	uuid := uuid.NewV4().String()
-	authCode := EncryptByMd5(uuid + ":" + account)
-	return authCode
-}
-
-func EncryptByMd5(password string) string {
-	data := []byte(password)
-	has := md5.Sum(data)
-	md5str1 := fmt.Sprintf("%x", has) //将[]byte转成16进制
-	return md5str1
-}
-
-func GenerateTokenKey(account string, appPlatform string, userId string) (key string) {
-	tokenValue := fmt.Sprintf("%s_%s_%s", account, appPlatform, userId)
-	key = EncryptByMd5(tokenValue + strconv.FormatInt(time.Now().UnixNano(), 10))
-	return
-}
-
-func ParseToken(token string) (arr []string) {
-	arr = strings.Split(token, "_")
-	return
-}
-
-func TimestampToDateString(timestamp int64) (dateTime string) {
-	//日期转化为时间戳
-	timeLayout := "2006-01-02 15:04:05" //转化所需模板
-	//时间戳转化为日期
-	dateTime = time.Unix(timestamp/1000, timestamp%1000).Format(timeLayout)
-	return
-}
 
 func CopyProperties(src, dst interface{}) (err error) {
 	// 防止意外panic
@@ -96,20 +57,6 @@ func CopyProperties(src, dst interface{}) (err error) {
 
 }
 
-//获取被调用方的方法名称
-func GetFuncName() string {
-	pc := make([]uintptr, 1)
-	runtime.Callers(2, pc)
-	f := runtime.FuncForPC(pc[0])
-	return f.Name()
-}
-
-func ConvertType(data interface{}, ret interface{}) {
-	msgData, _ := json.Marshal(data)
-	json.Unmarshal(msgData, ret)
-}
-
-
 // 获取服务器Ip
 func GetServerIp() (ip string) {
 	addrs, err := net.InterfaceAddrs()
@@ -129,4 +76,3 @@ func GetServerIp() (ip string) {
 
 	return
 }
-
