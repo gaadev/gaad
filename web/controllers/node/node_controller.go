@@ -65,10 +65,10 @@ func PageNodes(c *gin.Context) {
 	node := models.Node{}
 	var nodes []models.Node
 
-	base.Page(c, &node, &nodes, func() (query interface{}, where []interface{}) {
-		where = make([]interface{}, 3)
+	base.Page(c, &node, &nodes, func() (query interface{}, args []interface{}) {
+		args = make([]interface{}, 3)
 		query = "ip like ?"
-		where[0] = "%" + node.Ip + "%"
+		args[0] = "%" + node.Ip + "%"
 		return
 	})
 }

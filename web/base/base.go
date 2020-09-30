@@ -10,7 +10,9 @@ import (
 	"io/ioutil"
 )
 
-type Handler func() (query interface{}, args []interface{})
+type QueryHandler func() (query interface{}, args []interface{})
+
+type WhereHandler func() (where []interface{})
 
 type CheckParam func(c *gin.Context) error
 
@@ -33,7 +35,7 @@ func Update(c *gin.Context, model interface{}, checkParam CheckParam) {
 	createOrUpdate("update", c, model, checkParam)
 }
 
-func Page(c *gin.Context, entity interface{}, entities interface{}, handler Handler) {
+func Page(c *gin.Context, entity interface{}, entities interface{}, handler QueryHandler) {
 	var (
 		err error
 	)
@@ -85,10 +87,8 @@ func createOrUpdate(opreation string, c *gin.Context, model interface{}, checkPa
 	controllers.Response(c, common.OK, "", nil)
 }
 
-func List(c *gin.Context, entities interface{}, handler Handler) {
-	query, args := handler()
-	sqlitedb.QueryList(entities, query, args...)
-	data := make(map[string]interface{})
-	data["data"] = entities
-	controllers.Response(c, common.OK, "", data)
+func List(c *gin.Context, entities interface{}, handler WhereHandler) {
+	where := handler()
+	sqlitedb.QueryList(entities, where...)
+	controllers.Response(c, common.OK, "", entities)
 }

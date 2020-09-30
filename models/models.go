@@ -21,7 +21,7 @@ type Node struct {
 	Port        int    `json:"port,omitempty"`
 	Username    string `json:"username,omitempty"`
 	Password    string `json:"password,omitempty"`
-	ClusterId   string `json:"clusterId,omitempty"`
+	ClusterId   uint   `json:"clusterId,omitempty"`
 	ClusterName string `json:"clusterName,omitempty"`
 	Remark      string `json:"remark,omitempty"`
 	Status      int    `json:"status,omitempty"` //1正常，2非正常
@@ -30,6 +30,7 @@ type Node struct {
 type Cluster struct {
 	gorm.Model
 	ClusterName string `json:"clusterName,omitempty"`
+	Category    string `json:"category,omitempty"`
 	Remark      string `json:"remark,omitempty"`
 	Status      int    `json:"status,omitempty"`
 }

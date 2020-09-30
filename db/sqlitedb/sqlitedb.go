@@ -51,7 +51,7 @@ func QueryPage(curPage int, pageSize int, models interface{}, query interface{},
 	return count
 }
 
-func QueryList(models interface{}, query interface{}, args ...interface{}) {
+func QueryList(models interface{}, where ...interface{}) {
 	db, err := gorm.Open(dialect, dbFile)
 	if err != nil {
 		panic("连接数据库失败")
@@ -59,7 +59,7 @@ func QueryList(models interface{}, query interface{}, args ...interface{}) {
 	defer db.Close()
 
 	// 获取取指page，指定pagesize的记录
-	db.Find(models).Where(query, args)
+	db.Find(models, where...)
 }
 
 func Update(model interface{}, attrs ...interface{}) {

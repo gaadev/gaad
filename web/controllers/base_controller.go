@@ -19,7 +19,7 @@ type BaseController struct {
 }
 
 // 获取全部请求解析到map
-func Response(c *gin.Context, code uint32, msg string, data map[string]interface{}) error {
+func Response(c *gin.Context, code uint32, msg string, data interface{}) error {
 	message := common.Result(code, msg, data)
 	c.JSON(http.StatusOK, message)
 	return errors.New("request meets a error")

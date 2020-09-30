@@ -51,7 +51,7 @@ func PageProjects(c *gin.Context) {
 
 func ListProjects(c *gin.Context) {
 	var projects []models.Project
-	base.List(c, &projects, func() (query interface{}, args []interface{}) {
-		return nil, nil
+	base.List(c, &projects, func() (where []interface{}) {
+		return nil
 	})
 }

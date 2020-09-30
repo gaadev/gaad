@@ -54,9 +54,9 @@ func PageClusters(c *gin.Context) {
 
 func ListClusters(c *gin.Context) {
 	var clusters []models.Cluster
-	base.List(c, &clusters, func() (query interface{}, args []interface{}) {
-		query = "status = 1"
-		args = nil
+	base.List(c, &clusters, func() (where []interface{}) {
+		where = make([]interface{}, 3)
+		where[0] = "status = 1"
 		return
 	})
 }
