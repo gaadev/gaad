@@ -36,7 +36,17 @@ func InitWebRouters() {
 	nodeRouter := router.Group("/node")
 	{
 		nodeRouter.POST("/createNode", node.CreateNode)
-		nodeRouter.GET("/listNodes", node.ListNodes)
+		nodeRouter.POST("/pageNodes", node.PageNodes)
+		nodeRouter.PUT("/updateNode", node.UpdateNode)
+		nodeRouter.DELETE("/deleteNode", node.DeleteNode)
+	}
+	clusterRouter := router.Group("/cluster")
+	{
+		clusterRouter.POST("/createCluster", node.CreateCluster)
+		clusterRouter.POST("/pageClusters", node.PageClusters)
+		clusterRouter.POST("/listClusters", node.ListClusters)
+		clusterRouter.PUT("/updateCluster", node.UpdateCluster)
+		clusterRouter.DELETE("/deleteCluster", node.DeleteCluster)
 	}
 }
 

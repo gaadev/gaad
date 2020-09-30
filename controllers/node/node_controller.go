@@ -1,14 +1,13 @@
 package node
 
 import (
-	"encoding/json"
 	"fmt"
 	"gaad/common"
+	"gaad/common/web"
 	"gaad/controllers"
 	"gaad/db/sqlitedb"
 	"gaad/models"
 	"github.com/gin-gonic/gin"
-	"io/ioutil"
 	"net"
 	"strconv"
 )
@@ -16,15 +15,30 @@ import (
 // 查看全部在线用户
 func CreateNode(c *gin.Context) {
 
-	data, _ := ioutil.ReadAll(c.Request.Body)
+	modNode("create", c)
 
-	node := &models.Node{}
+}
 
-	err := json.Unmarshal(data, node)
-	if err != nil {
-		controllers.Response(c, common.ParameterIllegal, "参数格式有误", nil)
-		return
-	}
+// 查看全部在线用户
+func UpdateNode(c *gin.Context) {
+
+	modNode("update", c)
+
+}
+
+// 查看全部在线用户
+func DeleteNode(c *gin.Context) {
+
+	node := models.Node{}
+	web.GetModel(&node, c)
+
+	sqlitedb.Delete(&node)
+	controllers.Response(c, common.OK, "", nil)
+}
+
+func modNode(operation string, c *gin.Context) {
+	node := models.Node{}
+	web.GetModel(&node, c)
 
 	address := net.ParseIP(node.Ip)
 	if address == nil {
@@ -43,14 +57,21 @@ func CreateNode(c *gin.Context) {
 		controllers.Response(c, common.ParameterIllegal, "", nil)
 		return
 	}
-	sqlitedb.Create(&node)
+	if operation == "create" {
+		sqlitedb.Create(&node)
+	}
+	if operation == "update" {
+		sqlitedb.Update(&node)
+	}
 
 	controllers.Response(c, common.OK, "", nil)
-
 }
 
 // 查看全部在线用户
-func ListNodes(c *gin.Context) {
+func PageNodes(c *gin.Context) {
+
+	node := models.Node{}
+	web.GetModel(&node, c)
 
 	curPageStr := c.Query("curPage")
 	pageRecordStr := c.Query("pageRecord")
@@ -69,7 +90,7 @@ func ListNodes(c *gin.Context) {
 		nodes []models.Node
 	)
 
-	total := sqlitedb.QueryPage(curPage, pageRecord, &nodes, "username = ?", "root")
+	total := sqlitedb.QueryPage(curPage, pageRecord, &nodes, "ip like ?", "%"+node.Ip+"%")
 
 	data := make(map[string]interface{})
 

@@ -44,11 +44,22 @@ func QueryPage(curPage int, pageSize int, modles interface{}, query interface{},
 	var count int = 0
 
 	// 获取取指page，指定pagesize的记录
-	db.Where(query, where...).Limit(pageSize).Offset((curPage - 1) * pageSize).Order("updated_at,created_at desc").Find(modles)
+	db.Where(query, where...).Limit(pageSize).Offset((curPage - 1) * pageSize).Order("updated_at desc").Find(modles)
 
 	// 获取总条数
 	db.Model(modles).Where(query, where...).Count(&count)
 	return count
+}
+
+func QueryList(modles interface{}) {
+	db, err := gorm.Open(dialect, dbFile)
+	if err != nil {
+		panic("连接数据库失败")
+	}
+	defer db.Close()
+
+	// 获取取指page，指定pagesize的记录
+	db.Find(modles)
 }
 
 func Update(modle interface{}, where ...interface{}) {
