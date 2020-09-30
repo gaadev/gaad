@@ -9,8 +9,12 @@ package routers
 
 import (
 	"fmt"
-	"gaad/controllers/node"
-	"gaad/controllers/project"
+	"gaad/web/controllers/application"
+	"gaad/web/controllers/node"
+	"github.com/swaggo/gin-swagger"
+	"github.com/swaggo/gin-swagger/swaggerFiles"
+
+	_ "gaad/docs"
 	"gaad/initialize"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -24,15 +28,12 @@ var (
 func InitWebRouters() {
 	router = gin.Default()
 
+	//处理跨域的问题
 	corsMiddleWare := cors.Default()
 	router.Use(corsMiddleWare)
 
-	// 用户组
-	projectRouter := router.Group("/project")
-	{
-		projectRouter.GET("/deploy", project.Deploy)
-		projectRouter.GET("/display", project.Display)
-	}
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
 	nodeRouter := router.Group("/node")
 	{
 		nodeRouter.POST("/createNode", node.CreateNode)
@@ -48,6 +49,22 @@ func InitWebRouters() {
 		clusterRouter.PUT("/updateCluster", node.UpdateCluster)
 		clusterRouter.DELETE("/deleteCluster", node.DeleteCluster)
 	}
+
+	projectRouter := router.Group("/project")
+	{
+		projectRouter.POST("/createProject", application.CreateProject)
+		projectRouter.POST("/pageProjects", application.PageProjects)
+		projectRouter.POST("/listProjects", application.ListProjects)
+		projectRouter.PUT("/updateProject", application.UpdateProject)
+		projectRouter.DELETE("/deleteProject", application.DeleteProject)
+	}
+
+	serviceRouter := router.Group("/service")
+	{
+		serviceRouter.POST("/deploy", application.Deploy)
+		serviceRouter.POST("/display", application.Display)
+	}
+
 }
 
 func InitHttpServer() {

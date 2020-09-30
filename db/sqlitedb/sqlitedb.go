@@ -10,7 +10,7 @@ const (
 	dbFile  = "gaad.db"
 )
 
-func Create(modle interface{}) {
+func Create(model interface{}) {
 	db, err := gorm.Open(dialect, dbFile)
 	if err != nil {
 		panic("连接数据库失败")
@@ -18,23 +18,23 @@ func Create(modle interface{}) {
 	defer db.Close()
 
 	// 自动迁移模式
-	db.AutoMigrate(modle)
+	db.AutoMigrate(model)
 
 	// 创建
-	db.Create(modle)
+	db.Create(model)
 }
 
-func First(modle interface{}, where ...interface{}) {
+func First(model interface{}, where ...interface{}) {
 	db, err := gorm.Open(dialect, dbFile)
 	if err != nil {
 		panic("连接数据库失败")
 	}
 	defer db.Close()
 
-	db.First(modle, where...) // 查询id为1的product
+	db.First(model, where...) // 查询id为1的product
 }
 
-func QueryPage(curPage int, pageSize int, modles interface{}, query interface{}, where ...interface{}) int {
+func QueryPage(curPage int, pageSize int, models interface{}, query interface{}, args ...interface{}) int {
 	db, err := gorm.Open(dialect, dbFile)
 	if err != nil {
 		panic("连接数据库失败")
@@ -44,14 +44,14 @@ func QueryPage(curPage int, pageSize int, modles interface{}, query interface{},
 	var count int = 0
 
 	// 获取取指page，指定pagesize的记录
-	db.Where(query, where...).Limit(pageSize).Offset((curPage - 1) * pageSize).Order("updated_at desc").Find(modles)
+	db.Where(query, args...).Limit(pageSize).Offset((curPage - 1) * pageSize).Order("updated_at desc").Find(models)
 
 	// 获取总条数
-	db.Model(modles).Where(query, where...).Count(&count)
+	db.Model(models).Where(query, args...).Count(&count)
 	return count
 }
 
-func QueryList(modles interface{}) {
+func QueryList(models interface{}, query interface{}, args ...interface{}) {
 	db, err := gorm.Open(dialect, dbFile)
 	if err != nil {
 		panic("连接数据库失败")
@@ -59,25 +59,25 @@ func QueryList(modles interface{}) {
 	defer db.Close()
 
 	// 获取取指page，指定pagesize的记录
-	db.Find(modles)
+	db.Find(models).Where(query, args)
 }
 
-func Update(modle interface{}, where ...interface{}) {
+func Update(model interface{}, attrs ...interface{}) {
 	db, err := gorm.Open(dialect, dbFile)
 	if err != nil {
 		panic("连接数据库失败")
 	}
 	defer db.Close()
 	// 更新 - 更新product的price为2000
-	db.Model(modle).Update(where...)
+	db.Model(model).Update(attrs...)
 }
 
-func Delete(modle interface{}) {
+func Delete(model interface{}) {
 	db, err := gorm.Open(dialect, dbFile)
 	if err != nil {
 		panic("连接数据库失败")
 	}
 	defer db.Close()
 
-	db.Delete(modle)
+	db.Delete(model)
 }

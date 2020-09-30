@@ -1,17 +1,10 @@
-/**
-* Created by GoLand.
-* User: link1st
-* Date: 2019-07-25
-* Time: 12:11
- */
-
-package project
+package application
 
 import (
 	"bufio"
 	"flag"
 	"gaad/common"
-	"gaad/controllers"
+	"gaad/web/controllers"
 	"github.com/gin-gonic/gin"
 	"log"
 	"os"
@@ -39,6 +32,12 @@ func Deploy(c *gin.Context) {
 
 }
 
+// @display
+// @Description 展示
+// @Accept  json
+// @Produce json
+// @Success 200 {string} string	"name,helloWorld"
+// @Router /service/sisplay [get]
 // 查看全部在线用户
 func Display(c *gin.Context) {
 	var (

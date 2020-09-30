@@ -1,0 +1,17 @@
+info:
+  contact: {}
+  license: {}
+paths:
+  /service/sisplay:
+    get:
+      consumes:
+      - application/json
+      description: 展示
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: name,helloWorld
+          schema:
+            type: string
+swagger: "2.0"

@@ -9,6 +9,11 @@ package models
 
 import "github.com/jinzhu/gorm"
 
+type Page struct {
+	CurPage  int `json:"curPage,omitempty"`
+	PageSize int `json:"pageSize,omitempty"`
+}
+
 //1对1聊天
 type Node struct {
 	gorm.Model
@@ -19,11 +24,18 @@ type Node struct {
 	ClusterId   string `json:"clusterId,omitempty"`
 	ClusterName string `json:"clusterName,omitempty"`
 	Remark      string `json:"remark,omitempty"`
-	Status      string `json:"status,omitempty"`
+	Status      int    `json:"status,omitempty"` //1正常，2非正常
 }
 
 type Cluster struct {
 	gorm.Model
 	ClusterName string `json:"clusterName,omitempty"`
+	Remark      string `json:"remark,omitempty"`
+	Status      int    `json:"status,omitempty"`
+}
+
+type Project struct {
+	gorm.Model
+	ProjectName string `json:"clusterName,omitempty"`
 	Remark      string `json:"remark,omitempty"`
 }

@@ -8,6 +8,7 @@
 package controllers
 
 import (
+	"errors"
 	"gaad/common"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -18,8 +19,8 @@ type BaseController struct {
 }
 
 // 获取全部请求解析到map
-func Response(c *gin.Context, code uint32, msg string, data map[string]interface{}) {
+func Response(c *gin.Context, code uint32, msg string, data map[string]interface{}) error {
 	message := common.Result(code, msg, data)
 	c.JSON(http.StatusOK, message)
-	return
+	return errors.New("request meets a error")
 }
