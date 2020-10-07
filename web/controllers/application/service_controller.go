@@ -12,7 +12,12 @@ import (
 	"strings"
 )
 
-// 查看全部在线用户
+//TODO 部署的接口还未完善
+// @Description 部署
+// @Accept  json
+// @Produce json
+// @Success 200 {object} common.JsonResult
+// @Router /service/deploy [post]
 func Deploy(c *gin.Context) {
 	//for i := 0; i < 100; i++{
 	//	time.Sleep(time.Duration(1)*time.Second)
@@ -32,6 +37,11 @@ func Deploy(c *gin.Context) {
 
 }
 
+// @Description 展示
+// @Accept  json
+// @Produce json
+// @Success 200 {object} common.JsonResult
+// @Router /service/display [post]
 func Display(c *gin.Context) {
 	var (
 		count   int

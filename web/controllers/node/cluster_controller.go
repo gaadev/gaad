@@ -9,7 +9,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// 查看全部在线用户
+// @Description 创建集群
+// @Accept  json
+// @Produce json
+// @Param data body models.Cluster true "Data"
+// @Success 200 {object} common.JsonResult
+// @Router /cluster/createCluster [post]
 func CreateCluster(c *gin.Context) {
 	cluster := models.Cluster{}
 	base.Create(c, &cluster, func(c *gin.Context) error {
@@ -21,7 +26,12 @@ func CreateCluster(c *gin.Context) {
 
 }
 
-// 查看全部在线用户
+// @Description 更新集群
+// @Accept  json
+// @Produce json
+// @Param data body models.Cluster true "Data"
+// @Success 200 {object} common.JsonResult
+// @Router /cluster/updateCluster [put]
 func UpdateCluster(c *gin.Context) {
 
 	cluster := models.Cluster{}
@@ -39,7 +49,7 @@ func UpdateCluster(c *gin.Context) {
 // @Produce json
 // @Param data body models.Node true "Data"
 // @Success 200 {object} common.JsonResult
-// @Router /cluster/setNode [put]
+// @Router /cluster/setNode [post]
 func SetNode(c *gin.Context) {
 
 	node := models.Node{}
@@ -113,13 +123,23 @@ func ListNodes(c *gin.Context) {
 
 }
 
-// 查看全部在线用户
+// @Description 删除集群
+// @Accept  json
+// @Produce json
+// @Param data body models.Cluster true "Data"
+// @Success 200 {object} common.JsonResult
+// @Router /cluster/deleteCluster [delete]
 func DeleteCluster(c *gin.Context) {
 
 	base.Delete(c, &models.Cluster{})
 }
 
-// 查看全部在线用户
+// @Description 分页查询集群
+// @Accept  json
+// @Produce json
+// @Param data body models.Cluster true "Data"
+// @Success 200 {object} common.JsonResult
+// @Router /cluster/pageClusters [post]
 func PageClusters(c *gin.Context) {
 	cluster := models.Cluster{}
 	var clusters []models.Cluster
@@ -136,6 +156,12 @@ func PageClusters(c *gin.Context) {
 		})
 }
 
+// @Description 查询所有集群
+// @Accept  json
+// @Produce json
+// @Param data body models.Cluster true "Data"
+// @Success 200 {object} common.JsonResult
+// @Router /cluster/listClusters [post]
 func ListClusters(c *gin.Context) {
 	var clusters []models.Cluster
 	base.List(c, &clusters, func() (where []interface{}) {

@@ -14,7 +14,7 @@ type Page struct {
 	PageSize int `json:"pageSize,omitempty"`
 }
 
-//1对1聊天
+//节点
 type Node struct {
 	gorm.Model
 	Ip          string `json:"ip,omitempty"`
@@ -28,6 +28,7 @@ type Node struct {
 	Status      int    `json:"status,omitempty"` //1正常，2非正常
 }
 
+//集群
 type Cluster struct {
 	gorm.Model
 	ClusterName string `json:"clusterName,omitempty"`
@@ -36,6 +37,7 @@ type Cluster struct {
 	Status      int    `json:"status,omitempty"`
 }
 
+//项目
 type Project struct {
 	gorm.Model
 	ProjectName string `json:"clusterName,omitempty"`

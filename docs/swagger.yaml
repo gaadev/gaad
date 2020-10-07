@@ -8,6 +8,17 @@ definitions:
       msg:
         type: string
     type: object
+  models.Cluster:
+    properties:
+      category:
+        type: string
+      clusterName:
+        type: string
+      remark:
+        type: string
+      status:
+        type: integer
+    type: object
   models.Node:
     properties:
       clusterId:
@@ -31,10 +42,74 @@ definitions:
       username:
         type: string
     type: object
+  models.Project:
+    properties:
+      clusterName:
+        type: string
+      remark:
+        type: string
+    type: object
 info:
   contact: {}
   license: {}
 paths:
+  /cluster/createCluster:
+    post:
+      consumes:
+      - application/json
+      description: 创建集群
+      parameters:
+      - description: Data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/models.Cluster'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.JsonResult'
+  /cluster/deleteCluster:
+    delete:
+      consumes:
+      - application/json
+      description: 删除集群
+      parameters:
+      - description: Data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/models.Cluster'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.JsonResult'
+  /cluster/listClusters:
+    post:
+      consumes:
+      - application/json
+      description: 查询所有集群
+      parameters:
+      - description: Data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/models.Cluster'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.JsonResult'
   /cluster/listNodes:
     post:
       consumes:
@@ -47,6 +122,25 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/models.Node'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.JsonResult'
+  /cluster/pageClusters:
+    post:
+      consumes:
+      - application/json
+      description: 分页查询集群
+      parameters:
+      - description: Data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/models.Cluster'
       produces:
       - application/json
       responses:
@@ -74,7 +168,7 @@ paths:
           schema:
             $ref: '#/definitions/common.JsonResult'
   /cluster/setNode:
-    put:
+    post:
       consumes:
       - application/json
       description: 为集群添加主机节点
@@ -85,6 +179,25 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/models.Node'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.JsonResult'
+  /cluster/updateCluster:
+    put:
+      consumes:
+      - application/json
+      description: 更新集群
+      parameters:
+      - description: Data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/models.Cluster'
       produces:
       - application/json
       responses:
@@ -165,6 +278,125 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/models.Node'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.JsonResult'
+  /project/createProject:
+    post:
+      consumes:
+      - application/json
+      description: 创建项目
+      parameters:
+      - description: Data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/models.Project'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.JsonResult'
+  /project/deleteProject:
+    delete:
+      consumes:
+      - application/json
+      description: 删除项目
+      parameters:
+      - description: Data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/models.Project'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.JsonResult'
+  /project/listProjects:
+    post:
+      consumes:
+      - application/json
+      description: 查询所有项目
+      parameters:
+      - description: Data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/models.Project'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.JsonResult'
+  /project/pageProjects:
+    post:
+      consumes:
+      - application/json
+      description: 分页查询项目
+      parameters:
+      - description: Data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/models.Project'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.JsonResult'
+  /project/updateProject:
+    put:
+      consumes:
+      - application/json
+      description: 更新项目
+      parameters:
+      - description: Data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/models.Project'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.JsonResult'
+  /service/deploy:
+    post:
+      consumes:
+      - application/json
+      description: 部署
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.JsonResult'
+  /service/display:
+    post:
+      consumes:
+      - application/json
+      description: 展示
       produces:
       - application/json
       responses:

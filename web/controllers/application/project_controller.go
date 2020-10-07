@@ -8,7 +8,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// 查看全部在线用户
+// @Description 创建项目
+// @Accept  json
+// @Produce json
+// @Param data body models.Project true "Data"
+// @Success 200 {object} common.JsonResult
+// @Router /project/createProject [post]
 func CreateProject(c *gin.Context) {
 	project := models.Project{}
 	base.Create(c, &project, func(c *gin.Context) error {
@@ -19,7 +24,12 @@ func CreateProject(c *gin.Context) {
 	})
 }
 
-// 查看全部在线用户
+// @Description 更新项目
+// @Accept  json
+// @Produce json
+// @Param data body models.Project true "Data"
+// @Success 200 {object} common.JsonResult
+// @Router /project/updateProject [put]
 func UpdateProject(c *gin.Context) {
 	project := models.Project{}
 	base.Update(c, &project, func(c *gin.Context) error {
@@ -31,12 +41,22 @@ func UpdateProject(c *gin.Context) {
 
 }
 
-// 查看全部在线用户
+// @Description 删除项目
+// @Accept  json
+// @Produce json
+// @Param data body models.Project true "Data"
+// @Success 200 {object} common.JsonResult
+// @Router /project/deleteProject [delete]
 func DeleteProject(c *gin.Context) {
 	base.Delete(c, &models.Project{})
 }
 
-// 查看全部在线用户
+// @Description 分页查询项目
+// @Accept  json
+// @Produce json
+// @Param data body models.Project true "Data"
+// @Success 200 {object} common.JsonResult
+// @Router /project/pageProjects [post]
 func PageProjects(c *gin.Context) {
 	project := models.Project{}
 	var projects []models.Project
@@ -53,6 +73,12 @@ func PageProjects(c *gin.Context) {
 		})
 }
 
+// @Description 查询所有项目
+// @Accept  json
+// @Produce json
+// @Param data body models.Project true "Data"
+// @Success 200 {object} common.JsonResult
+// @Router /project/listProjects [post]
 func ListProjects(c *gin.Context) {
 	var projects []models.Project
 	base.List(c, &projects, func() (where []interface{}) {
