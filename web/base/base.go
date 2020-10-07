@@ -85,7 +85,7 @@ func createOrUpdate(opreation string, c *gin.Context, model interface{}, checkPa
 		sqlitedb.Create(model)
 	}
 	if opreation == "update" {
-		sqlitedb.Update(model, model)
+		sqlitedb.Update(model)
 	}
 
 	controllers.Response(c, common.OK, "", nil)

@@ -54,10 +54,18 @@ func SetNode(c *gin.Context) {
 
 	node := models.Node{}
 	base.Update(c, &node, func(c *gin.Context) error {
-		node = models.Node{ClusterId: node.ClusterId, ClusterName: node.ClusterName, NodeType: node.NodeType}
-		if node.ClusterId == 0 || node.ClusterName == "" || node.NodeType == 0 {
+		if node.ClusterId == 0 || node.NodeType == 0 {
 			return controllers.Response(c, common.ParameterIllegal, "", nil)
 		}
+		cluster := models.Cluster{}
+		sqlitedb.First(&cluster, " id = ?", node.ClusterId)
+		//cluster不存在
+		if cluster.ID == 0 {
+			return controllers.Response(c, common.ParameterIllegal, "所属于集群不存在", nil)
+		}
+		sqlitedb.First(&node, " id = ?", node.ID)
+		node.ClusterId = cluster.ID
+		node.ClusterName = cluster.ClusterName
 		return nil
 	})
 
@@ -104,7 +112,7 @@ func ListNodes(c *gin.Context) {
 	base.Page(c, &node, &nodes,
 		func(c *gin.Context) error {
 			if node.ClusterId == 0 {
-				return controllers.Response(c, common.ParameterIllegal, "", nil)
+				return controllers.Response(c, common.ParameterIllegal, "clusterId不能为空", nil)
 			}
 			return nil
 		},
@@ -152,6 +160,35 @@ func PageClusters(c *gin.Context) {
 			where = make([]interface{}, 3)
 			query = "cluster_name like ?"
 			where[0] = "%" + cluster.ClusterName + "%"
+			return
+		})
+}
+
+// @Description 查寻主机节点
+// @Accept  json
+// @Produce json
+// @Param data body models.Node true "Data"
+// @Success 200 {object} common.JsonResult
+// @Router /node/pageNodesForCluster [post]
+func PageNodesForCluster(c *gin.Context) {
+	node := models.Node{}
+	var nodes []models.Node
+
+	base.Page(c, &node, &nodes,
+		func(c *gin.Context) error {
+			return nil
+		},
+		func() (query interface{}, args []interface{}) {
+			args = make([]interface{}, 3)
+
+			sql := "1 = 1"
+			sql += " and cluster_id = 0 and node_type =0"
+			if node.Ip != "" {
+				sql += " and ip like ?"
+				args = append(args, "%"+node.Ip+"%")
+			}
+
+			query = sql
 			return
 		})
 }

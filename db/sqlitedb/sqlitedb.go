@@ -3,6 +3,7 @@ package sqlitedb
 import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
+	"reflect"
 )
 
 const (
@@ -62,14 +63,20 @@ func QueryList(models interface{}, where ...interface{}) {
 	db.Find(models, where...)
 }
 
-func Update(model interface{}, attrs ...interface{}) {
+func Update(model interface{}) {
 	db, err := gorm.Open(dialect, dbFile)
 	if err != nil {
 		panic("连接数据库失败")
 	}
 	defer db.Close()
-	// 更新 - 更新product的price为2000
-	db.Model(model).Update(attrs...)
+
+	// 自动迁移模式
+	db.AutoMigrate(model)
+	//model为pointer
+	ref := reflect.ValueOf(model)
+	elem := ref.Elem()
+	id := elem.FieldByName("ID").Uint()
+	db.Model(model).Update(model).Where("id = ?", id)
 }
 
 func Delete(model interface{}) {

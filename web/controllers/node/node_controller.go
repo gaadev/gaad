@@ -75,16 +75,13 @@ func DeleteNode(c *gin.Context) {
 	base.Delete(c, &models.Node{})
 }
 
-// @Description 删除主机节点
+// @Description 查寻主机节点
 // @Accept  json
 // @Produce json
 // @Param data body models.Node true "Data"
-// @Param action query string false "excludeInCluster 排除已经加入集群的节点"
 // @Success 200 {object} common.JsonResult
 // @Router /node/pageNodes [post]
 func PageNodes(c *gin.Context) {
-	//查寻接口的行为
-	action := c.Query("action")
 
 	node := models.Node{}
 	var nodes []models.Node
@@ -100,10 +97,6 @@ func PageNodes(c *gin.Context) {
 			if node.Ip != "" {
 				sql += " and ip like ?"
 				args = append(args, "%"+node.Ip+"%")
-			}
-
-			if action == "excludeInCluster" {
-				sql += " and cluster_id > 0"
 			}
 			query = sql
 			return
