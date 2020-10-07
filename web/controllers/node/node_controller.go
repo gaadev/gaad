@@ -16,6 +16,7 @@ import (
 // @Param data body models.Node true "Data"
 // @Success 200 {object} common.JsonResult
 // @Router /node/createNode [post]
+// @Tags 节点(node)
 func CreateNode(c *gin.Context) {
 	node := models.Node{}
 	base.Create(c, &node, func(c *gin.Context) error {
@@ -44,6 +45,7 @@ func CreateNode(c *gin.Context) {
 // @Param data body models.Node true "Data"
 // @Success 200 {object} common.JsonResult
 // @Router /node/updateNode [put]
+// @Tags 节点(node)
 func UpdateNode(c *gin.Context) {
 	node := models.Node{}
 	base.Update(c, &node, func(c *gin.Context) error {
@@ -70,6 +72,7 @@ func UpdateNode(c *gin.Context) {
 // @Param data body models.Node true "Data"
 // @Success 200 {object} common.JsonResult
 // @Router /node/deleteNode [delete]
+// @Tags 节点(node)
 func DeleteNode(c *gin.Context) {
 
 	base.Delete(c, &models.Node{})
@@ -81,6 +84,7 @@ func DeleteNode(c *gin.Context) {
 // @Param data body models.Node true "Data"
 // @Success 200 {object} common.JsonResult
 // @Router /node/pageNodes [post]
+// @Tags 节点(node)
 func PageNodes(c *gin.Context) {
 
 	node := models.Node{}

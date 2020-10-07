@@ -15,6 +15,7 @@ import (
 // @Param data body models.Cluster true "Data"
 // @Success 200 {object} common.JsonResult
 // @Router /cluster/createCluster [post]
+// @Tags 集群(Cluster)
 func CreateCluster(c *gin.Context) {
 	cluster := models.Cluster{}
 	base.Create(c, &cluster, func(c *gin.Context) error {
@@ -32,6 +33,7 @@ func CreateCluster(c *gin.Context) {
 // @Param data body models.Cluster true "Data"
 // @Success 200 {object} common.JsonResult
 // @Router /cluster/updateCluster [put]
+// @Tags 集群(Cluster)
 func UpdateCluster(c *gin.Context) {
 
 	cluster := models.Cluster{}
@@ -50,6 +52,7 @@ func UpdateCluster(c *gin.Context) {
 // @Param data body models.Node true "Data"
 // @Success 200 {object} common.JsonResult
 // @Router /cluster/setNode [post]
+// @Tags 集群(Cluster)
 func SetNode(c *gin.Context) {
 
 	node := models.Node{}
@@ -77,6 +80,7 @@ func SetNode(c *gin.Context) {
 // @Param data body models.Node true "Data"
 // @Success 200 {object} common.JsonResult
 // @Router /cluster/removeNode [delete]
+// @Tags 集群(Cluster)
 func RemoveNode(c *gin.Context) {
 
 	node := models.Node{}
@@ -105,6 +109,7 @@ func RemoveNode(c *gin.Context) {
 // @Param data body models.Node true "Data"
 // @Success 200 {object} common.JsonResult
 // @Router /cluster/listNodes [post]
+// @Tags 集群(Cluster)
 func ListNodes(c *gin.Context) {
 	node := models.Node{}
 	var nodes []models.Node
@@ -137,6 +142,7 @@ func ListNodes(c *gin.Context) {
 // @Param data body models.Cluster true "Data"
 // @Success 200 {object} common.JsonResult
 // @Router /cluster/deleteCluster [delete]
+// @Tags 集群(Cluster)
 func DeleteCluster(c *gin.Context) {
 
 	base.Delete(c, &models.Cluster{})
@@ -148,6 +154,7 @@ func DeleteCluster(c *gin.Context) {
 // @Param data body models.Cluster true "Data"
 // @Success 200 {object} common.JsonResult
 // @Router /cluster/pageClusters [post]
+// @Tags 集群(Cluster)
 func PageClusters(c *gin.Context) {
 	cluster := models.Cluster{}
 	var clusters []models.Cluster
@@ -170,6 +177,7 @@ func PageClusters(c *gin.Context) {
 // @Param data body models.Node true "Data"
 // @Success 200 {object} common.JsonResult
 // @Router /node/pageNodesForCluster [post]
+// @Tags 集群(Cluster)
 func PageNodesForCluster(c *gin.Context) {
 	node := models.Node{}
 	var nodes []models.Node
@@ -199,6 +207,7 @@ func PageNodesForCluster(c *gin.Context) {
 // @Param data body models.Cluster true "Data"
 // @Success 200 {object} common.JsonResult
 // @Router /cluster/listClusters [post]
+// @Tags 集群(Cluster)
 func ListClusters(c *gin.Context) {
 	var clusters []models.Cluster
 	base.List(c, &clusters, func() (where []interface{}) {

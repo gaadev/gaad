@@ -14,6 +14,7 @@ import (
 // @Param data body models.Project true "Data"
 // @Success 200 {object} common.JsonResult
 // @Router /project/createProject [post]
+// @Tags 项目(Project)
 func CreateProject(c *gin.Context) {
 	project := models.Project{}
 	base.Create(c, &project, func(c *gin.Context) error {
@@ -30,6 +31,7 @@ func CreateProject(c *gin.Context) {
 // @Param data body models.Project true "Data"
 // @Success 200 {object} common.JsonResult
 // @Router /project/updateProject [put]
+// @Tags 项目(Project)
 func UpdateProject(c *gin.Context) {
 	project := models.Project{}
 	base.Update(c, &project, func(c *gin.Context) error {
@@ -47,6 +49,7 @@ func UpdateProject(c *gin.Context) {
 // @Param data body models.Project true "Data"
 // @Success 200 {object} common.JsonResult
 // @Router /project/deleteProject [delete]
+// @Tags 项目(Project)
 func DeleteProject(c *gin.Context) {
 	base.Delete(c, &models.Project{})
 }
@@ -57,6 +60,7 @@ func DeleteProject(c *gin.Context) {
 // @Param data body models.Project true "Data"
 // @Success 200 {object} common.JsonResult
 // @Router /project/pageProjects [post]
+// @Tags 项目(Project)
 func PageProjects(c *gin.Context) {
 	project := models.Project{}
 	var projects []models.Project
@@ -79,6 +83,7 @@ func PageProjects(c *gin.Context) {
 // @Param data body models.Project true "Data"
 // @Success 200 {object} common.JsonResult
 // @Router /project/listProjects [post]
+// @Tags 项目(Project)
 func ListProjects(c *gin.Context) {
 	var projects []models.Project
 	base.List(c, &projects, func() (where []interface{}) {
