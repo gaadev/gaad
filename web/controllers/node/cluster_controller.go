@@ -127,7 +127,7 @@ func ListNodes(c *gin.Context) {
 
 			sql := "1 = 1"
 			if node.ClusterId != 0 {
-				sql += " and cluster_id = "
+				sql += " and cluster_id = ?"
 				args = append(args, node.ClusterId)
 			}
 			query = sql
@@ -165,8 +165,13 @@ func PageClusters(c *gin.Context) {
 		},
 		func() (query interface{}, where []interface{}) {
 			where = make([]interface{}, 3)
-			query = "cluster_name like ?"
-			where[0] = "%" + cluster.ClusterName + "%"
+
+			sql := "1 = 1"
+			if cluster.ClusterName != "" {
+				query = "cluster_name like ?"
+				where[0] = "%" + cluster.ClusterName + "%"
+			}
+			query = sql
 			return
 		})
 }
@@ -176,7 +181,7 @@ func PageClusters(c *gin.Context) {
 // @Produce json
 // @Param data body models.Node true "Data"
 // @Success 200 {object} common.JsonResult
-// @Router /node/pageNodesForCluster [post]
+// @Router /cluster/pageNodesForCluster [post]
 // @Tags 集群(Cluster)
 func PageNodesForCluster(c *gin.Context) {
 	node := models.Node{}

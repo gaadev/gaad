@@ -12,8 +12,7 @@ import (
 	"strings"
 )
 
-//TODO 部署的接口还未完善
-// @Description 部署
+// @Description 部署的接口还未完善
 // @Accept  json
 // @Produce json
 // @Success 200 {object} common.JsonResult
