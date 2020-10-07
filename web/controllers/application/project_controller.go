@@ -41,12 +41,16 @@ func PageProjects(c *gin.Context) {
 	project := models.Project{}
 	var projects []models.Project
 
-	base.Page(c, &project, &projects, func() (query interface{}, where []interface{}) {
-		where = make([]interface{}, 3)
-		query = "project_name like ?"
-		where[0] = "%" + project.ProjectName + "%"
-		return
-	})
+	base.Page(c, &project, &projects,
+		func(c *gin.Context) error {
+			return nil
+		},
+		func() (query interface{}, where []interface{}) {
+			where = make([]interface{}, 3)
+			query = "project_name like ?"
+			where[0] = "%" + project.ProjectName + "%"
+			return
+		})
 }
 
 func ListProjects(c *gin.Context) {

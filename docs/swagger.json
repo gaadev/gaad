@@ -5,22 +5,269 @@
         "license": {}
     },
     "paths": {
-        "/service/sisplay": {
-            "get": {
-                "description": "展示",
+        "/cluster/listNodes": {
+            "post": {
+                "description": "查寻集群下面的所有主机",
                 "consumes": [
                     "application/json"
                 ],
                 "produces": [
                     "application/json"
                 ],
-                "responses": {
-                    "200": {
-                        "description": "name,helloWorld",
+                "parameters": [
+                    {
+                        "description": "Data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/models.Node"
                         }
                     }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/common.JsonResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/cluster/removeNode": {
+            "delete": {
+                "description": "移除集群的主机节点",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "description": "Data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Node"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/common.JsonResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/cluster/setNode": {
+            "put": {
+                "description": "为集群添加主机节点",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "description": "Data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Node"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/common.JsonResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/node/createNode": {
+            "post": {
+                "description": "创建主机节点",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "description": "Data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Node"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/common.JsonResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/node/deleteNode": {
+            "delete": {
+                "description": "删除主机节点",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "description": "Data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Node"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/common.JsonResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/node/pageNodes": {
+            "post": {
+                "description": "删除主机节点",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "description": "Data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Node"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "excludeInCluster 排除已经加入集群的节点",
+                        "name": "action",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/common.JsonResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/node/updateNode": {
+            "put": {
+                "description": "更新主机节点",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "description": "Data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Node"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/common.JsonResult"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "common.JsonResult": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {
+                    "type": "object"
+                },
+                "msg": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Node": {
+            "type": "object",
+            "properties": {
+                "clusterId": {
+                    "type": "integer"
+                },
+                "clusterName": {
+                    "type": "string"
+                },
+                "ip": {
+                    "type": "string"
+                },
+                "nodeType": {
+                    "description": "1 主机主节点，2 集群主节点，3，集群从节点",
+                    "type": "integer"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "port": {
+                    "type": "integer"
+                },
+                "remark": {
+                    "type": "string"
+                },
+                "status": {
+                    "description": "1正常，2非正常",
+                    "type": "integer"
+                },
+                "username": {
+                    "type": "string"
                 }
             }
         }

@@ -23,6 +23,7 @@ type Node struct {
 	Password    string `json:"password,omitempty"`
 	ClusterId   uint   `json:"clusterId,omitempty"`
 	ClusterName string `json:"clusterName,omitempty"`
+	NodeType    int    `json:"nodeType,omitempty"` //1 主机主节点，2 集群主节点，3，集群从节点
 	Remark      string `json:"remark,omitempty"`
 	Status      int    `json:"status,omitempty"` //1正常，2非正常
 }

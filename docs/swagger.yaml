@@ -1,17 +1,175 @@
+definitions:
+  common.JsonResult:
+    properties:
+      code:
+        type: integer
+      data:
+        type: object
+      msg:
+        type: string
+    type: object
+  models.Node:
+    properties:
+      clusterId:
+        type: integer
+      clusterName:
+        type: string
+      ip:
+        type: string
+      nodeType:
+        description: 1 主机主节点，2 集群主节点，3，集群从节点
+        type: integer
+      password:
+        type: string
+      port:
+        type: integer
+      remark:
+        type: string
+      status:
+        description: 1正常，2非正常
+        type: integer
+      username:
+        type: string
+    type: object
 info:
   contact: {}
   license: {}
 paths:
-  /service/sisplay:
-    get:
+  /cluster/listNodes:
+    post:
       consumes:
       - application/json
-      description: 展示
+      description: 查寻集群下面的所有主机
+      parameters:
+      - description: Data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/models.Node'
       produces:
       - application/json
       responses:
         "200":
-          description: name,helloWorld
+          description: OK
           schema:
-            type: string
+            $ref: '#/definitions/common.JsonResult'
+  /cluster/removeNode:
+    delete:
+      consumes:
+      - application/json
+      description: 移除集群的主机节点
+      parameters:
+      - description: Data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/models.Node'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.JsonResult'
+  /cluster/setNode:
+    put:
+      consumes:
+      - application/json
+      description: 为集群添加主机节点
+      parameters:
+      - description: Data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/models.Node'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.JsonResult'
+  /node/createNode:
+    post:
+      consumes:
+      - application/json
+      description: 创建主机节点
+      parameters:
+      - description: Data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/models.Node'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.JsonResult'
+  /node/deleteNode:
+    delete:
+      consumes:
+      - application/json
+      description: 删除主机节点
+      parameters:
+      - description: Data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/models.Node'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.JsonResult'
+  /node/pageNodes:
+    post:
+      consumes:
+      - application/json
+      description: 删除主机节点
+      parameters:
+      - description: Data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/models.Node'
+      - description: excludeInCluster 排除已经加入集群的节点
+        in: query
+        name: action
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.JsonResult'
+  /node/updateNode:
+    put:
+      consumes:
+      - application/json
+      description: 更新主机节点
+      parameters:
+      - description: Data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/models.Node'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.JsonResult'
 swagger: "2.0"

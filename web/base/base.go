@@ -35,7 +35,7 @@ func Update(c *gin.Context, model interface{}, checkParam CheckParam) {
 	createOrUpdate("update", c, model, checkParam)
 }
 
-func Page(c *gin.Context, entity interface{}, entities interface{}, handler QueryHandler) {
+func Page(c *gin.Context, entity interface{}, entities interface{}, checkParam CheckParam, handler QueryHandler) {
 	var (
 		err error
 	)
@@ -56,6 +56,10 @@ func Page(c *gin.Context, entity interface{}, entities interface{}, handler Quer
 	if page.PageSize == 0 {
 		page.PageSize = 10
 	}
+	if err = checkParam(c); err != nil {
+		return
+	}
+
 	query, where := handler()
 	total := sqlitedb.QueryPage(page.CurPage, page.PageSize, entities, query, where...)
 

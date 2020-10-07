@@ -32,13 +32,6 @@ func Deploy(c *gin.Context) {
 
 }
 
-// @display
-// @Description 展示
-// @Accept  json
-// @Produce json
-// @Success 200 {string} string	"name,helloWorld"
-// @Router /service/sisplay [get]
-// 查看全部在线用户
 func Display(c *gin.Context) {
 	var (
 		count   int

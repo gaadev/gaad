@@ -10,7 +10,12 @@ import (
 	"net"
 )
 
-// 查看全部在线用户
+// @Description 创建主机节点
+// @Accept  json
+// @Produce json
+// @Param data body models.Node true "Data"
+// @Success 200 {object} common.JsonResult
+// @Router /node/createNode [post]
 func CreateNode(c *gin.Context) {
 	node := models.Node{}
 	base.Create(c, &node, func(c *gin.Context) error {
@@ -33,7 +38,12 @@ func CreateNode(c *gin.Context) {
 
 }
 
-// 查看全部在线用户
+// @Description 更新主机节点
+// @Accept  json
+// @Produce json
+// @Param data body models.Node true "Data"
+// @Success 200 {object} common.JsonResult
+// @Router /node/updateNode [put]
 func UpdateNode(c *gin.Context) {
 	node := models.Node{}
 	base.Update(c, &node, func(c *gin.Context) error {
@@ -54,21 +64,48 @@ func UpdateNode(c *gin.Context) {
 
 }
 
-// 查看全部在线用户
+// @Description 删除主机节点
+// @Accept  json
+// @Produce json
+// @Param data body models.Node true "Data"
+// @Success 200 {object} common.JsonResult
+// @Router /node/deleteNode [delete]
 func DeleteNode(c *gin.Context) {
 
 	base.Delete(c, &models.Node{})
 }
 
-// 查看全部在线用户
+// @Description 删除主机节点
+// @Accept  json
+// @Produce json
+// @Param data body models.Node true "Data"
+// @Param action query string false "excludeInCluster 排除已经加入集群的节点"
+// @Success 200 {object} common.JsonResult
+// @Router /node/pageNodes [post]
 func PageNodes(c *gin.Context) {
+	//查寻接口的行为
+	action := c.Query("action")
+
 	node := models.Node{}
 	var nodes []models.Node
 
-	base.Page(c, &node, &nodes, func() (query interface{}, args []interface{}) {
-		args = make([]interface{}, 3)
-		query = "ip like ?"
-		args[0] = "%" + node.Ip + "%"
-		return
-	})
+	base.Page(c, &node, &nodes,
+		func(c *gin.Context) error {
+			return nil
+		},
+		func() (query interface{}, args []interface{}) {
+			args = make([]interface{}, 3)
+
+			sql := "1 = 1"
+			if node.Ip != "" {
+				sql += " and ip like ?"
+				args = append(args, "%"+node.Ip+"%")
+			}
+
+			if action == "excludeInCluster" {
+				sql += " and cluster_id > 0"
+			}
+			query = sql
+			return
+		})
 }
