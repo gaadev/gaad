@@ -49,7 +49,7 @@ func InitKubernetesMaster(node models.Node) {
 	/* map插入key - value对,各个国家对应的首都 */
 	configMap["MASTER_HOST"] = "k8s-master-1"
 	configMap["MASTER_IP"] = node.Ip
-	configMap["K8S_VERSION"] = "v1.18.6"
+	//configMap["K8S_VERSION"] = "v1.18.6"
 
 	common.GenConfigFile(configMap, "./script/k8s/config")
 	uid := uuid.NewV4()
