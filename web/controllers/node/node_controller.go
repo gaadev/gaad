@@ -3,6 +3,7 @@ package node
 import (
 	"fmt"
 	"gaad/common"
+	"gaad/db/sqlitedb"
 	"gaad/models"
 	"gaad/web/base"
 	"gaad/web/controllers"
@@ -25,6 +26,13 @@ func CreateNode(c *gin.Context) {
 			return controllers.Response(c, common.ParameterIllegal, "Ip地址格式有误", nil)
 		} else {
 			fmt.Println("正确的ip地址", address.String())
+		}
+
+		nod := models.Node{}
+		sqlitedb.First(&nod, "ip = ?", nod.Ip)
+		//pro.Id > 0说明已经存在
+		if nod.ID > 0 {
+			return controllers.Response(c, common.OperationFailure, "IP重复", nil)
 		}
 
 		if node.Port < 2 {
@@ -95,7 +103,7 @@ func PageNodes(c *gin.Context) {
 			return nil
 		},
 		func() (query interface{}, args []interface{}) {
-			args = make([]interface{}, 3)
+			args = make([]interface{}, 0)
 
 			sql := "1 = 1"
 			if node.Ip != "" {

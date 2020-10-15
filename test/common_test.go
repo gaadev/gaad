@@ -5,6 +5,7 @@ import (
 	"gaad/common"
 	"gaad/db/boltdb"
 	"gaad/db/sqlitedb"
+	"gaad/models"
 	"github.com/jinzhu/gorm"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/satori/go.uuid"
@@ -44,16 +45,27 @@ type Product struct {
 }
 
 func TestSqlitedb(t *testing.T) {
-	product := Product{Code: "L1212", Price: 1000}
-	sqlitedb.Create(&product)
-	// 读取
+	const (
+		dialect = "sqlite3"
+		dbFile  = "gaad.db"
+	)
+	db, err := gorm.Open(dialect, dbFile)
+	if err != nil {
+		panic("连接数据库失败")
+	}
+	defer db.Close()
 
-	var pro Product
+	node := models.Node{ClusterName: "xxxxx"}
+	node.Model = gorm.Model{ID: 5}
 
-	sqlitedb.First(&pro, "code = ?", "L1212")
-	sqlitedb.Update(&product, "Price", 2000)
-	fmt.Printf("%v", pro)
-	sqlitedb.Delete(&product)
+	// 自动迁移模式
+	db.AutoMigrate(&node)
+	//model为pointer
+	//ref := reflect.ValueOf(&node)
+	//elem := ref.Elem()
+	//id := elem.FieldByName("ID").Uint()
+	//db.Model(&node).Select("port").Update(&node)
+	db.Model(&node).Create(&node)
 }
 
 func TestSqliteUpdate(t *testing.T) {
@@ -64,7 +76,7 @@ func TestSqliteUpdate(t *testing.T) {
 	var pro Product
 
 	sqlitedb.First(&pro, "code = ?", "L1212")
-	sqlitedb.Update(&product, "Price", 2000)
+	sqlitedb.Update(&product)
 	fmt.Printf("%v", pro)
 	sqlitedb.Delete(&product)
 }
@@ -88,9 +100,12 @@ func TestCreateFile(t *testing.T) {
 func TestTruncation(t *testing.T) {
 	var str = "aaaa/log/log.log/"
 	pos := strings.LastIndex(str, "/")
-	if pos != -1 {
-		fmt.Println(str[:pos])
-	}
+	fmt.Println(str[pos+1:])
+	//if strings.HasSuffix(str, "/") {
+	//	pos1 := strings.LastIndex(str,"/")
+	//	pos2 := strings.LastIndex(str[:pos1],"/")
+	//	fmt.Println(str[pos2:])
+	//}
 
 }
 

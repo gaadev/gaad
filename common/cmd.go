@@ -1,13 +1,12 @@
 package common
 
-
 import (
-"bufio"
-"fmt"
-//    "golang.org/x/text/encoding/simplifiedchinese"
-"io"
-"os"
-"os/exec"
+	"bufio"
+	"fmt"
+	//    "golang.org/x/text/encoding/simplifiedchinese"
+	"io"
+	"os"
+	"os/exec"
 )
 
 type Charset string
@@ -17,8 +16,7 @@ const (
 	GB18030 = Charset("GB18030")
 )
 
-
-func main(){
+func main() {
 	//execCommand(os.Args[1], os.Args[2:])
 	//par:=[]string{
 	//	"-c",
@@ -31,16 +29,16 @@ func main(){
 func ExecCommand(commandName string, params []string) bool {
 
 	//执行命令
-	cmd := exec.Command(commandName,params...)
+	cmd := exec.Command(commandName, params...)
 
 	//显示运行的命令
 	fmt.Println(cmd.Args)
 
 	stdout, err := cmd.StdoutPipe()
-	errReader,errr := cmd.StderrPipe()
+	errReader, errr := cmd.StderrPipe()
 
-	if errr != nil{
-		fmt.Println("err:"+errr.Error())
+	if errr != nil {
+		fmt.Println("err:" + errr.Error())
 	}
 
 	//开启错误处理
@@ -51,18 +49,16 @@ func ExecCommand(commandName string, params []string) bool {
 		return false
 	}
 
-	f,err := os.Create("./log/log-1.log")
+	f, err := os.Create("./log/log-1.log")
 	defer f.Close()
-
 
 	cmd.Start()
 	in := bufio.NewScanner(stdout)
 	for in.Scan() {
-		cmdRe:=ConvertByte2String(in.Bytes(),"UTF8")
-		fmt.Println("->",cmdRe)
-		f.WriteString(cmdRe+"\n")
+		cmdRe := ConvertByte2String(in.Bytes(), "UTF8")
+		fmt.Println("->", cmdRe)
+		f.WriteString(cmdRe + "\n")
 	}
-
 
 	cmd.Wait()
 	return true
@@ -86,10 +82,10 @@ func checkFileIsExist(filename string) bool {
 }
 
 //开启一个协程来输出错误
-func handlerErr(errReader io.ReadCloser){
+func handlerErr(errReader io.ReadCloser) {
 	in := bufio.NewScanner(errReader)
 	for in.Scan() {
-		cmdRe:=ConvertByte2String(in.Bytes(),"UTF8")
+		cmdRe := ConvertByte2String(in.Bytes(), "UTF8")
 		fmt.Errorf(cmdRe)
 	}
 }

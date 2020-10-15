@@ -17,7 +17,7 @@ import (
 // @Produce json
 // @Success 200 {object} common.JsonResult
 // @Router /service/deploy [post]
-// @Tags 部署(Deploy)
+// @Tags 部署(Service)
 func Deploy(c *gin.Context) {
 	//for i := 0; i < 100; i++{
 	//	time.Sleep(time.Duration(1)*time.Second)
@@ -42,7 +42,7 @@ func Deploy(c *gin.Context) {
 // @Produce json
 // @Success 200 {object} common.JsonResult
 // @Router /service/display [post]
-// @Tags 部署(Deploy)
+// @Tags 部署(Service)
 func Display(c *gin.Context) {
 	var (
 		count   int

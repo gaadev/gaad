@@ -2,6 +2,7 @@ package application
 
 import (
 	"gaad/common"
+	"gaad/db/sqlitedb"
 	"gaad/models"
 	"gaad/web/base"
 	"gaad/web/controllers"
@@ -20,6 +21,12 @@ func CreateProject(c *gin.Context) {
 	base.Create(c, &project, func(c *gin.Context) error {
 		if project.ProjectName == "" {
 			return controllers.Response(c, common.ParameterIllegal, "", nil)
+		}
+		pro := models.Project{}
+		sqlitedb.First(&pro, "ws_code = ?", pro.WsCode)
+		//pro.Id > 0说明已经存在
+		if pro.ID > 0 {
+			return controllers.Response(c, common.OperationFailure, "WsCode重复", nil)
 		}
 		return nil
 	})
@@ -70,9 +77,9 @@ func PageProjects(c *gin.Context) {
 			return nil
 		},
 		func() (query interface{}, where []interface{}) {
-			where = make([]interface{}, 3)
+			where = make([]interface{}, 0)
 			query = "project_name like ?"
-			where[0] = "%" + project.ProjectName + "%"
+			where = append(where, "%"+project.ProjectName+"%")
 			return
 		})
 }

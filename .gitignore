@@ -20,8 +20,6 @@ main
 main_linux
 prim
 
-gaad.db
-
 /test/gaad.db
 /test/test.db
 

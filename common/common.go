@@ -3,6 +3,7 @@ package common
 import (
 	"errors"
 	"fmt"
+	"log"
 	"net"
 	"os"
 	"reflect"
@@ -97,4 +98,17 @@ func isExist(path string) bool {
 		return false
 	}
 	return true
+}
+
+func GenConfigFile(m map[string]string, file string) {
+	f, err := os.Create(file)
+	defer f.Close()
+	if err != nil {
+		log.Fatal(err)
+	}
+	/*使用键输出地图值 */
+	for key := range m {
+		f.WriteString(fmt.Sprintf("%s=%s", key, m[key]))
+		f.WriteString("\n")
+	}
 }

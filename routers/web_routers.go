@@ -48,10 +48,11 @@ func InitWebRouters() {
 		clusterRouter.POST("/listClusters", node.ListClusters)
 		clusterRouter.PUT("/updateCluster", node.UpdateCluster)
 		clusterRouter.DELETE("/deleteCluster", node.DeleteCluster)
-		clusterRouter.POST("/setNode", node.SetNode)
+		clusterRouter.PUT("/setNode", node.SetNode)
 		clusterRouter.POST("/listNodes", node.ListNodes)
 		clusterRouter.DELETE("/removeNode", node.RemoveNode)
 		clusterRouter.POST("/pageNodesForCluster", node.PageNodesForCluster)
+		clusterRouter.POST("/initCluster", node.InitCluster)
 	}
 
 	projectRouter := router.Group("/project")

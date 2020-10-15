@@ -40,6 +40,12 @@ type Cluster struct {
 //项目
 type Project struct {
 	gorm.Model
-	ProjectName string `json:"clusterName,omitempty"`
+	ProjectName string `json:"projectName,omitempty"`
+	WsCode      string `json:"wsCode,omitempty"`
+	ClusterId   uint   `json:"clusterId,omitempty"`
+	ClusterName string `json:"clusterName,omitempty"`
+	Status      int    `json:"status,omitempty"`
 	Remark      string `json:"remark,omitempty"`
+	GitAccount  string `json:"gitAccount,omitempty"`
+	GitPassword string `json:"gitPassword,omitempty"`
 }
