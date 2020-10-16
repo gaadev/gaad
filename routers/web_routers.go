@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"gaad/web/controllers/application"
 	"gaad/web/controllers/node"
+	"gaad/web/controllers/websocket"
 	"github.com/swaggo/gin-swagger"
 	"github.com/swaggo/gin-swagger/swaggerFiles"
 
@@ -68,6 +69,11 @@ func InitWebRouters() {
 	{
 		serviceRouter.POST("/deploy", application.Deploy)
 		serviceRouter.POST("/display", application.Display)
+	}
+
+	wsRouter := router.Group("/ws")
+	{
+		wsRouter.GET("/shellConnect", websocket.ShellConnect)
 	}
 
 }

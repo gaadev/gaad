@@ -17,15 +17,15 @@ type Page struct {
 //节点
 type Node struct {
 	gorm.Model
-	Ip          string `json:"ip,omitempty"`
-	Port        int    `json:"port,omitempty"`
-	Username    string `json:"username,omitempty"`
-	Password    string `json:"password,omitempty"`
-	ClusterId   uint   `json:"clusterId,omitempty"`
-	ClusterName string `json:"clusterName,omitempty"`
-	NodeType    int    `json:"nodeType,omitempty"` //1 主机主节点，2 集群主节点，3，集群从节点
-	Remark      string `json:"remark,omitempty"`
-	Status      int    `json:"status,omitempty"` //1正常，2非正常
+	Ip          string `json:"ip,omitempty"`          //ip地址
+	Port        int    `json:"port,omitempty"`        //端口号
+	Username    string `json:"username,omitempty"`    //用户名
+	Password    string `json:"password,omitempty"`    //密码
+	ClusterId   uint   `json:"clusterId,omitempty"`   //集群id
+	ClusterName string `json:"clusterName,omitempty"` //集群名称
+	NodeType    int    `json:"nodeType,omitempty"`    //1 主机主节点，2 集群主节点，3，集群从节点
+	Remark      string `json:"remark,omitempty"`      //标记
+	Status      int    `json:"status,omitempty"`      //状态：1正常，2非正常
 }
 
 //集群
