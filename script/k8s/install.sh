@@ -43,13 +43,13 @@ function set_hostname() {
 }
 
 function config_yum_source() {
-  sleep 3
+  sleep 5
   sudo rm -rf /etc/yum.repos.d/*docker* /etc/yum.repos.d/*kubernetes* \
-    /etc/yum.repos.d/*epel* /etc/yum.repos.d/*elrepo*
+  /etc/yum.repos.d/*epel* /etc/yum.repos.d/*elrepo*
   wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo
   wget -O /etc/yum.repos.d/epel.repo http://mirrors.aliyun.com/repo/epel-7.repo
   #配置docker 镜像源
-  sudo yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
+  wget -O /etc/yum.repos.d/docker-ce.repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
   cat <<EOF >/etc/yum.repos.d/kubernetes.repo
 [kubernetes]
 name=Kubernetes
@@ -57,7 +57,7 @@ baseurl=https://mirrors.aliyun.com/kubernetes/yum/repos/kubernetes-el7-x86_64
 enabled=1
 gpgcheck=0
 EOF
-
+#  yum update -y
   yum makecache fast
 }
 
@@ -66,12 +66,7 @@ function install_docker() {
   sleep 25
   hlog "开始安装docker"
   #step1: 卸载docker相关
-  sudo yum remove -y docker* containerd.io
-  #step2: 按照yum-utils
-  sudo yum install -y yum-utils
-
-  #step4: 更新yum
-  sudo yum makecache fast
+  sudo yum remove -y docker* containerd.io || :
   #step5: 按照docker-ce
   #yum list docker-ce --showduplicates|sort -r #可以查看镜像
   version=$1
@@ -178,9 +173,9 @@ function pull_k8s_images() {
 
 function init_k8s_master() {
   kubeadm init \
-    --apiserver-advertise-address $1 \
-    --kubernetes-version=$2 \
-    --pod-network-cidr=10.244.0.0/16
+  --apiserver-advertise-address $1 \
+  --kubernetes-version=$2 \
+  --pod-network-cidr=10.244.0.0/16
 
   mkdir -p $HOME/.kube
   sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
@@ -191,9 +186,9 @@ function config_network() {
   kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
 }
 
+check_linux_system
 uninstall_k8s
 init_env
-check_linux_system
 set_hostname $MASTER_HOST
 config_yum_source
 install_docker $DOCKER_VERSION
