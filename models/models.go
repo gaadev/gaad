@@ -10,8 +10,8 @@ package models
 import "github.com/jinzhu/gorm"
 
 type Page struct {
-	CurPage  int `json:"curPage,omitempty"`
-	PageSize int `json:"pageSize,omitempty"`
+	CurPage    int `json:"curPage,omitempty"`
+	PageRecord int `json:"pageRecord,omitempty"`
 }
 
 //节点
@@ -48,4 +48,36 @@ type Project struct {
 	Remark      string `json:"remark,omitempty"`
 	GitAccount  string `json:"gitAccount,omitempty"`
 	GitPassword string `json:"gitPassword,omitempty"`
+}
+
+//服务
+type Service struct {
+	gorm.Model
+	ServiceName string `json:"serviceName,omitempty"`
+	ServiceCode string `json:"serviceCode,omitempty"`
+	GitUrl      string `json:"gitUrl,omitempty"`
+	GitBranch   string `json:"gitBranch,omitempty"`
+	Lang        string `json:"lang,omitempty"`
+	DevopsOpts  string `json:"devopsOpts,omitempty"`
+	ProjectId   uint   `json:"projectId,omitempty"`
+	WsCode      string `json:"wsCode,omitempty"`
+	ProjectName string `json:"projectName,omitempty"`
+	Status      int    `json:"status,omitempty"`
+	Remark      string `json:"remark,omitempty"`
+}
+
+type Deploy struct {
+	gorm.Model
+	ServiceId   uint   `json:"serviceId,omitempty"`
+	ServiceName string `json:"serviceName,omitempty"`
+	ServiceCode string `json:"serviceCode,omitempty"`
+	DeployNum   string `json:"deployNum,omitempty"`
+	Status      int    `json:"status,omitempty"` //1成功，2失败
+	LogFilePath string `json:"logFilePath,omitempty"`
+}
+
+type DevopsOpts struct {
+	JavaOpts  string `json:"javaOpts,omitempty"`
+	BuildTool string `json:"buildTool,omitempty"`
+	Num       string `json:"num,omitempty"`
 }

@@ -53,21 +53,21 @@ func Page(c *gin.Context, entity interface{}, entities interface{}, checkParam C
 	if page.CurPage == 0 {
 		page.CurPage = 1
 	}
-	if page.PageSize == 0 {
-		page.PageSize = 10
+	if page.PageRecord == 0 {
+		page.PageRecord = 10
 	}
 	if err = checkParam(c); err != nil {
 		return
 	}
 
 	query, where := handler()
-	total := sqlitedb.QueryPage(page.CurPage, page.PageSize, entities, query, where...)
+	total := sqlitedb.QueryPage(page.CurPage, page.PageRecord, entities, query, where...)
 
 	data := make(map[string]interface{})
 
 	data["data"] = entities
 	data["curPage"] = page.CurPage
-	data["pageRecord"] = page.PageSize
+	data["pageRecord"] = page.PageRecord
 	data["total"] = total
 	controllers.Response(c, common.OK, "", data)
 }

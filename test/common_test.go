@@ -1,11 +1,13 @@
 package test
 
 import (
+	"encoding/base64"
 	"fmt"
 	"gaad/common"
 	"gaad/db/boltdb"
 	"gaad/db/sqlitedb"
 	"gaad/models"
+	"gaad/web/controllers/application"
 	"github.com/jinzhu/gorm"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/satori/go.uuid"
@@ -106,6 +108,17 @@ func TestTruncation(t *testing.T) {
 	//	pos2 := strings.LastIndex(str[:pos1],"/")
 	//	fmt.Println(str[pos2:])
 	//}
+
+}
+
+func TestDevops(t *testing.T) {
+	application.GenDevopsCmd(nil)
+}
+
+func TestBase64(t *testing.T) {
+	sEnc := base64.StdEncoding.EncodeToString([]byte("root:192.168.10.11:123456"))
+
+	fmt.Println(sEnc)
 
 }
 

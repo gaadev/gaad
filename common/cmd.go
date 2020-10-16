@@ -3,6 +3,7 @@ package common
 import (
 	"bufio"
 	"fmt"
+	"gaad/models"
 	//    "golang.org/x/text/encoding/simplifiedchinese"
 	"io"
 	"os"
@@ -16,17 +17,8 @@ const (
 	GB18030 = Charset("GB18030")
 )
 
-func main() {
-	//execCommand(os.Args[1], os.Args[2:])
-	//par:=[]string{
-	//	"-c",
-	//	"sh test.sh",
-	//}
-	//ExecCommand("/bin/sh", par)
-}
-
 //封装一个函数来执行命令
-func ExecCommand(commandName string, params []string) bool {
+func ExecCommand(commandName string, params []string) error {
 
 	//执行命令
 	cmd := exec.Command(commandName, params...)
@@ -35,10 +27,11 @@ func ExecCommand(commandName string, params []string) bool {
 	fmt.Println(cmd.Args)
 
 	stdout, err := cmd.StdoutPipe()
-	errReader, errr := cmd.StderrPipe()
+	errReader, err := cmd.StderrPipe()
 
-	if errr != nil {
-		fmt.Println("err:" + errr.Error())
+	if err != nil {
+		fmt.Println("err:" + err.Error())
+		return err
 	}
 
 	//开启错误处理
@@ -46,10 +39,45 @@ func ExecCommand(commandName string, params []string) bool {
 
 	if err != nil {
 		fmt.Println(err)
-		return false
+		return err
 	}
 
-	f, err := os.Create("./log/log-1.log")
+	cmd.Start()
+	in := bufio.NewScanner(stdout)
+	for in.Scan() {
+		cmdRe := ConvertByte2String(in.Bytes(), "UTF8")
+		fmt.Println("->", cmdRe)
+	}
+
+	return cmd.Wait()
+}
+
+//封装一个函数来执行命令
+func DeployCommand(service models.Service, logFilePath string, commandName string, params []string) error {
+
+	//执行命令
+	cmd := exec.Command(commandName, params...)
+
+	//显示运行的命令
+	fmt.Println(cmd.Args)
+
+	stdout, err := cmd.StdoutPipe()
+	errReader, err := cmd.StderrPipe()
+
+	if err != nil {
+		fmt.Println("err:" + err.Error())
+		return err
+	}
+
+	//开启错误处理
+	go handlerErr(errReader)
+
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+
+	f, err := os.Create(logFilePath)
 	defer f.Close()
 
 	cmd.Start()
@@ -60,14 +88,7 @@ func ExecCommand(commandName string, params []string) bool {
 		f.WriteString(cmdRe + "\n")
 	}
 
-	cmd.Wait()
-	return true
-}
-
-func check(e error) {
-	if e != nil {
-		panic(e)
-	}
+	return cmd.Wait()
 }
 
 /**

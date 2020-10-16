@@ -1,6 +1,8 @@
 package application
 
 import (
+	"encoding/base64"
+	"fmt"
 	"gaad/common"
 	"gaad/db/sqlitedb"
 	"gaad/models"
@@ -30,6 +32,46 @@ func CreateProject(c *gin.Context) {
 		}
 		return nil
 	})
+
+	cluster := &models.Cluster{}
+	sqlitedb.First(cluster, "ID = ? and status = 1", project.ClusterId)
+
+	if cluster.ID == 0 {
+		controllers.Response(c, common.OperationFailure, "关联集群状态不正常", nil)
+		return
+	}
+
+	var (
+		nodes       []models.Node
+		nodeMasters []models.Node
+	)
+	sqlitedb.QueryList(&nodes, "cluster_id = ?", cluster.ID)
+
+	for _, node := range nodes {
+		if node.NodeType == 2 {
+			nodeMasters = append(nodeMasters, node)
+		}
+	}
+
+	if len(nodeMasters) == 0 {
+		controllers.Response(c, common.OperationFailure, "关联集群没有主节点", nil)
+		return
+	}
+
+	nodeMaster := nodeMasters[0]
+
+	nodeSecretMsg := nodeMaster.Username + ":" + nodeMaster.Ip + ":" + nodeMaster.Password
+	secret := base64.StdEncoding.EncodeToString([]byte(nodeSecretMsg))
+
+	remoteDeploySecret := project.WsCode + "=" + secret
+	fmt.Println(remoteDeploySecret)
+
+	par := []string{
+		"-c",
+		"sh ./shell/add_node_secret.sh " + project.WsCode + " " + remoteDeploySecret,
+	}
+
+	common.ExecCommand("/bin/sh", par)
 }
 
 // @Description 更新项目
@@ -78,8 +120,12 @@ func PageProjects(c *gin.Context) {
 		},
 		func() (query interface{}, where []interface{}) {
 			where = make([]interface{}, 0)
-			query = "project_name like ?"
-			where = append(where, "%"+project.ProjectName+"%")
+			sql := "1 = 1"
+			if project.ProjectName != "" {
+				query = "project_name like ?"
+				where = append(where, "%"+project.ProjectName+"%")
+			}
+			query = sql
 			return
 		})
 }
@@ -94,6 +140,8 @@ func PageProjects(c *gin.Context) {
 func ListProjects(c *gin.Context) {
 	var projects []models.Project
 	base.List(c, &projects, func() (where []interface{}) {
-		return nil
+		where = make([]interface{}, 0)
+		where = append(where, "status = 1")
+		return
 	})
 }

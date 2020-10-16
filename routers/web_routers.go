@@ -67,6 +67,10 @@ func InitWebRouters() {
 
 	serviceRouter := router.Group("/service")
 	{
+		serviceRouter.POST("/createService", application.CreateService)
+		serviceRouter.POST("/pageServices", application.PageServices)
+		serviceRouter.PUT("/updateService", application.UpdateService)
+		serviceRouter.DELETE("/deleteService", application.DeleteService)
 		serviceRouter.POST("/deploy", application.Deploy)
 		serviceRouter.POST("/display", application.Display)
 	}

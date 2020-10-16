@@ -34,7 +34,7 @@ func First(model interface{}, where ...interface{}) {
 	db.First(model, where...) // 查询id为1的product
 }
 
-func QueryPage(curPage int, pageSize int, models interface{}, query interface{}, args ...interface{}) int {
+func QueryPage(curPage int, PageRecord int, models interface{}, query interface{}, args ...interface{}) int {
 	db, err := gorm.Open(dialect, dbFile)
 	if err != nil {
 		panic("连接数据库失败")
@@ -43,8 +43,8 @@ func QueryPage(curPage int, pageSize int, models interface{}, query interface{},
 
 	var count int = 0
 
-	// 获取取指page，指定pagesize的记录
-	db.Where(query, args...).Limit(pageSize).Offset((curPage - 1) * pageSize).Order("updated_at desc").Find(models)
+	// 获取取指page，指定PageRecord的记录
+	db.Where(query, args...).Limit(PageRecord).Offset((curPage - 1) * PageRecord).Order("updated_at desc").Find(models)
 
 	// 获取总条数
 	db.Model(models).Where(query, args...).Count(&count)
@@ -58,7 +58,7 @@ func QueryList(models interface{}, where ...interface{}) {
 	}
 	defer db.Close()
 
-	// 获取取指page，指定pagesize的记录
+	// 获取取指page，指定PageRecord的记录
 	db.Find(models, where...)
 }
 
