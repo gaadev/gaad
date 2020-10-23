@@ -1,4 +1,20 @@
 #!/bin/bash
+function process_host() {
+  host=$1
+  exist=`echo $host | grep ":"`
+  echo $exist
+  if test -n "$exist"  ; then
+          port=${host##*:}
+          echo $port
+          if test "$port" = "80" ; then
+                  host=${host%%:*}
+                  echo $host
+          fi
+  fi
+}
+
+
+
 
 #必须先声明
 declare -A dic
@@ -44,12 +60,20 @@ dic[cfg_deploy_gen_location]=${dic[cfg_devops_path]}/deploy/${dic[opt_workspace]
 #加载配置
 source ${dic[cfg_workspace_path]}/config
 #读取配置变量
-dic[cfg_harbor_address]=$BUILD_HARBOR_ADDRESS
-dic[cfg_harbor_project]=$BUILD_HARBOR_PROJECT
+#docker swarm stack name默认为gaad
+if test -z "$BUILD_DOCKER_STACK_NAME" ; then
+  dic[cfg_swarm_stack_name]=gaad
+else
+  dic[cfg_swarm_stack_name]=$BUILD_DOCKER_STACK_NAME
+fi
+
+dic[cfg_docker_registry_address]=$BUILD_DOCKER_REGISTRY_ADDRESS
+
+process_host ${dic[cfg_docker_registry_address]}
+
+dic[cfg_docker_registry_root]=gaad
 dic[cfg_build_platform]=$BUILD_PLATFORM
-dic[cfg_swarm_stack_name]=$BUILD_DOCKER_STACK_NAME
 dic[cfg_enable_dockerfiles]=$BUILD_ENABEL_DOCKERFILES
-dic[cfg_swarm_network]=$BUILD_DOCKER_SWARM_NETWORK
 dic[cfg_enable_templates]=$BUILD_ENABEL_TEMPLATES
 dic[cfg_main_project_name]=
 dic[cfg_java_extra_opts]=
@@ -68,4 +92,5 @@ case ${dic[cmd_1]} in
         run) run; ;;
         *) echo "cannot find the cammand ${dic[cmd_1]}"; exit1 ; ;;
 esac
+
 

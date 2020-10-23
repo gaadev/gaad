@@ -16,7 +16,7 @@ type Page struct {
 
 //节点
 type Node struct {
-	gorm.Model
+	gorm.Model 		   `swaggerignore:"true"`
 	Ip          string `json:"ip,omitempty"`          //ip地址
 	Port        int    `json:"port,omitempty"`        //端口号
 	Username    string `json:"username,omitempty"`    //用户名
@@ -30,7 +30,7 @@ type Node struct {
 
 //集群
 type Cluster struct {
-	gorm.Model
+	gorm.Model         `swaggerignore:"true"`
 	ClusterName string `json:"clusterName,omitempty"`
 	Category    string `json:"category,omitempty"`
 	Remark      string `json:"remark,omitempty"`
@@ -39,7 +39,7 @@ type Cluster struct {
 
 //项目
 type Project struct {
-	gorm.Model
+	gorm.Model         `swaggerignore:"true"`
 	ProjectName string `json:"projectName,omitempty"`
 	WsCode      string `json:"wsCode,omitempty"`
 	ClusterId   uint   `json:"clusterId,omitempty"`
@@ -52,7 +52,7 @@ type Project struct {
 
 //服务
 type Service struct {
-	gorm.Model
+	gorm.Model         `swaggerignore:"true"`
 	ServiceName string `json:"serviceName,omitempty"`
 	ServiceCode string `json:"serviceCode,omitempty"`
 	GitUrl      string `json:"gitUrl,omitempty"`
@@ -67,7 +67,7 @@ type Service struct {
 }
 
 type Deploy struct {
-	gorm.Model
+	gorm.Model         `swaggerignore:"true"`
 	ServiceId   uint   `json:"serviceId,omitempty"`
 	ServiceName string `json:"serviceName,omitempty"`
 	ServiceCode string `json:"serviceCode,omitempty"`

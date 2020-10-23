@@ -7,6 +7,7 @@ import (
 	"net"
 	"os"
 	"reflect"
+	"strings"
 )
 
 func CopyProperties(src, dst interface{}) (err error) {
@@ -72,6 +73,9 @@ func GetServerIp() (ip string) {
 		if ipNet, ok := address.(*net.IPNet); ok && !ipNet.IP.IsLoopback() {
 			if ipNet.IP.To4() != nil {
 				ip = ipNet.IP.String()
+				if strings.HasPrefix(ip,"192") {
+					return
+				}
 			}
 		}
 	}
