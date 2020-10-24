@@ -1,21 +1,13 @@
 #!/bin/bash
-function process_host() {
+function process_hos() {
   host=$1
-  exist=`echo $host | grep ":"`
-  echo $exist
-  if test -n "$exist"  ; then
-          port=${host##*:}
-          echo $port
-          if test "$port" = "80" ; then
-                  host=${host%%:*}
-                  echo $host
-          fi
+  if [[ $host == *:* ]] ; then
+      port=${host##*:}
+      if test "$port" = "80" ; then
+              host=${host%%:*}
+      fi
   fi
 }
-
-
-
-
 #必须先声明
 declare -A dic
 
@@ -42,7 +34,7 @@ dic[cfg_workspace_dir_name]="workspace"
 source ${dic[cfg_devops_path]}/${dic[cfg_workspace_dir_name]}/enable
 
 #如果命令行没有指定 --workspace 工作空间，那么使用enable文件配置的默认工作空间
-if test -z ${dic[opt_workspace]}; then
+if test -z "${dic[opt_workspace]}"; then
 	dic[cfg_enable_path]=$ENABEL_WORKSPACE_PATH
 	dic[opt_workspace]=${dic[cfg_enable_path]}
 	dic[cfg_workspace_path]=${dic[cfg_devops_path]}/${dic[cfg_workspace_dir_name]}/${dic[cfg_enable_path]}
@@ -55,7 +47,7 @@ else
 fi
 
 #设置deploy文件生成位置
-info "埋点: 当前的工作空间为:${opt_workspace}"
+info "埋点: 当前的工作空间为:${dic[opt_workspace]}"
 dic[cfg_deploy_gen_location]=${dic[cfg_devops_path]}/deploy/${dic[opt_workspace]}
 #加载配置
 source ${dic[cfg_workspace_path]}/config
@@ -66,11 +58,10 @@ if test -z "$BUILD_DOCKER_STACK_NAME" ; then
 else
   dic[cfg_swarm_stack_name]=$BUILD_DOCKER_STACK_NAME
 fi
-
 dic[cfg_docker_registry_address]=$BUILD_DOCKER_REGISTRY_ADDRESS
 
-process_host ${dic[cfg_docker_registry_address]}
 
+process_hos ${dic[cfg_docker_registry_address]}
 dic[cfg_docker_registry_root]=gaad
 dic[cfg_build_platform]=$BUILD_PLATFORM
 dic[cfg_enable_dockerfiles]=$BUILD_ENABEL_DOCKERFILES
