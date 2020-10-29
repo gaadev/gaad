@@ -87,8 +87,12 @@ func DeployCommand(service models.Service, logFilePath string, commandName strin
 		fmt.Println("->", cmdRe)
 		f.WriteString(cmdRe + "\n")
 	}
+	err = cmd.Wait()
 
-	return cmd.Wait()
+	if err != nil {
+		fmt.Println(err)
+	}
+	return err
 }
 
 /**

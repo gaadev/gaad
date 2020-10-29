@@ -1,7 +1,6 @@
 package websocket
 
 import (
-	"gaad/common"
 	"gaad/db/sqlitedb"
 	"gaad/models"
 	"gaad/web/base"
@@ -14,7 +13,7 @@ import (
 // @Param id query string true "节点id"
 // @Param cols query int true "列数"
 // @Param rows query int true "行数"
-// @Success 200 {object} common.JsonResult
+// @Success 200 {object} models.Rsp
 // @Router /ws/shellConnect [get]
 // @Tags Shell(shell)
 func ShellConnect(c *gin.Context) {
@@ -22,16 +21,16 @@ func ShellConnect(c *gin.Context) {
 	cols, err := strconv.Atoi(c.Query("cols"))
 	rows, err := strconv.Atoi(c.Query("rows"))
 	if nil != err {
-		controllers.Response(c, common.ParameterIllegal, "参数转换异常", nil)
+		controllers.Response(models.ParameterIllegal, "参数转换异常", nil).Write(c)
 		return
 	}
 	node := models.Node{}
 	//查询获取node
 	sqlitedb.First(&node, " id = ?", nodeId)
 	if nil == &node {
-		controllers.Response(c, common.NotData, "连接不存在", nil)
+		controllers.Response(models.NotData, "连接不存在", nil).Write(c)
 		return
 	}
 	base.HandleWsAndShell(&node, cols, rows, c)
-	return
+	controllers.Response(models.OK, "", nil).Write(c)
 }

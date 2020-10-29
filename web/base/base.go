@@ -2,7 +2,6 @@ package base
 
 import (
 	"encoding/json"
-	"gaad/common"
 	"gaad/db/sqlitedb"
 	"gaad/models"
 	"gaad/web/controllers"
@@ -14,28 +13,27 @@ type QueryHandler func() (query interface{}, args []interface{})
 
 type WhereHandler func() (where []interface{})
 
-type CheckParam func(c *gin.Context) error
+type CheckParam func() *models.Rsp
 
-func Create(c *gin.Context, model interface{}, checkParam CheckParam) {
-	createOrUpdate("create", c, model, checkParam)
+func Create(c *gin.Context, model interface{}, checkParam CheckParam) *models.Rsp {
+	return createOrUpdate("create", c, model, checkParam)
 }
 
-func Delete(c *gin.Context, model interface{}) {
+func Delete(c *gin.Context, model interface{}) *models.Rsp  {
 	err := GetModel(model, c)
 	if err != nil {
-		controllers.Response(c, common.ParameterIllegal, "参数格式有误", nil)
-		return
+		return controllers.Response(models.ParameterIllegal, "参数格式有误", nil)
 	}
 
 	sqlitedb.Delete(model)
-	controllers.Response(c, common.OK, "", nil)
+	return controllers.Response(models.OK, "", nil)
 }
 
-func Update(c *gin.Context, model interface{}, checkParam CheckParam) {
-	createOrUpdate("update", c, model, checkParam)
+func Update(c *gin.Context, model interface{}, checkParam CheckParam) *models.Rsp {
+	return createOrUpdate("update", c, model, checkParam)
 }
 
-func Page(c *gin.Context, entity interface{}, entities interface{}, checkParam CheckParam, handler QueryHandler) {
+func Page(c *gin.Context, entity interface{}, entities interface{}, checkParam CheckParam, handler QueryHandler) *models.Rsp {
 	var (
 		err error
 	)
@@ -46,8 +44,8 @@ func Page(c *gin.Context, entity interface{}, entities interface{}, checkParam C
 	err = json.Unmarshal(dataByt, entity)
 	err = json.Unmarshal(dataByt, &page)
 	if err != nil {
-		controllers.Response(c, common.ParameterIllegal, "参数格式有误", nil)
-		return
+		return controllers.Response(models.ParameterIllegal, "参数格式有误", nil)
+
 	}
 
 	if page.CurPage == 0 {
@@ -56,8 +54,8 @@ func Page(c *gin.Context, entity interface{}, entities interface{}, checkParam C
 	if page.PageRecord == 0 {
 		page.PageRecord = 10
 	}
-	if err = checkParam(c); err != nil {
-		return
+	if rsp := checkParam(); rsp != nil {
+		return rsp
 	}
 
 	query, where := handler()
@@ -69,17 +67,18 @@ func Page(c *gin.Context, entity interface{}, entities interface{}, checkParam C
 	data["curPage"] = page.CurPage
 	data["pageRecord"] = page.PageRecord
 	data["total"] = total
-	controllers.Response(c, common.OK, "", data)
+
+	return controllers.Response(models.OK, "", data)
 }
 
-func createOrUpdate(opreation string, c *gin.Context, model interface{}, checkParam CheckParam) {
+func createOrUpdate(opreation string, c *gin.Context, model interface{}, checkParam CheckParam) *models.Rsp {
 	err := GetModel(model, c)
 	if err != nil {
-		controllers.Response(c, common.ParameterIllegal, "参数格式有误", nil)
-		return
+		return controllers.Response(models.ParameterIllegal, "参数格式有误", nil)
+
 	}
-	if err = checkParam(c); err != nil {
-		return
+	if rsp := checkParam(); rsp != nil {
+		return rsp
 	}
 	if opreation == "create" {
 		sqlitedb.Create(model)
@@ -87,12 +86,11 @@ func createOrUpdate(opreation string, c *gin.Context, model interface{}, checkPa
 	if opreation == "update" {
 		sqlitedb.Update(model)
 	}
-
-	controllers.Response(c, common.OK, "", nil)
+	return controllers.Response(models.OK, "", nil)
 }
 
-func List(c *gin.Context, entities interface{}, handler WhereHandler) {
+func List(c *gin.Context, entities interface{}, handler WhereHandler) *models.Rsp  {
 	where := handler()
 	sqlitedb.QueryList(entities, where...)
-	controllers.Response(c, common.OK, "", entities)
+	return controllers.Response(models.OK, "", entities)
 }

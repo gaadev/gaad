@@ -5,7 +5,7 @@
 * Time: 12:11
  */
 
-package common
+package models
 
 const (
 	OK                 = 200  // Success

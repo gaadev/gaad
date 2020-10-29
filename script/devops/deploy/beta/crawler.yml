@@ -1,0 +1,26 @@
+version: '3.4'
+services:
+  crawler:
+    image: harbor.jsy.com/gaad/crawler:4eacab7_2020.10.26-14.44.48
+#    ports:
+#      - "?port:80"
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+      update_config:
+        parallelism: 1
+        delay: 10s
+      resources:
+        limits:
+          memory: 600M
+        reservations:
+          memory: 250M
+    networks:
+      - gaad
+networks:
+  gaad:
+    external: true

@@ -1,0 +1,26 @@
+version: '3.4'
+services:
+  core-config:
+    image: harbor.jsy.com/gaad/core-config:bd88d0b_2020.10.24-10.18.16
+#    ports:
+#      - "?port:80"
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+      update_config:
+        parallelism: 1
+        delay: 10s
+      resources:
+        limits:
+          memory: 600M
+        reservations:
+          memory: 250M
+    networks:
+      - gaad
+networks:
+  gaad:
+    external: true

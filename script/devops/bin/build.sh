@@ -394,6 +394,7 @@ function vue_build() {
 function python_build() {
   cfg_temp_dir=${dic[cfg_temp_dir]}
   cmd_job_name=${dic[cmd_job_name]}
+  opt_build_cmds=${dic[opt_build_cmds]}
   cfg_docker_registry_address=${dic[cfg_docker_registry_address]}
   cfg_docker_registry_root=${dic[cfg_docker_registry_root]}
   tmp_dockerfile=${dic[tmp_dockerfile]}
@@ -401,7 +402,6 @@ function python_build() {
   module_path=$(find $cfg_temp_dir/* -type d -name ${cmd_job_name})
   if test -z "$module_path"; then module_path=$cfg_temp_dir; fi
   dic[tmp_build_dist_path]=$module_path
-  echo "xxxx:"${dic[tmp_build_dist_path]}
   info "开始python项目镜像的构建"
   cd ${dic[tmp_build_dist_path]}
   check_env_by_cmd_v docker

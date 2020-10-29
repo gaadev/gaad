@@ -58,10 +58,12 @@ type Service struct {
 	GitUrl      string `json:"gitUrl,omitempty"`
 	GitBranch   string `json:"gitBranch,omitempty"`
 	Lang        string `json:"lang,omitempty"`
-	DevopsOpts  string `json:"devopsOpts,omitempty"`
+	DevopsOpts	string `json:"devopsOpts,omitempty"`
 	ProjectId   uint   `json:"projectId,omitempty"`
 	WsCode      string `json:"wsCode,omitempty"`
 	ProjectName string `json:"projectName,omitempty"`
+	Dockerfile  string `json:"dockerfile,omitempty"`
+	Template    string `json:"template,omitempty"`
 	Status      int    `json:"status,omitempty"`
 	Remark      string `json:"remark,omitempty"`
 }
@@ -79,5 +81,4 @@ type Deploy struct {
 type DevopsOpts struct {
 	JavaOpts  string `json:"javaOpts,omitempty"`
 	BuildTool string `json:"buildTool,omitempty"`
-	Num       string `json:"num,omitempty"`
 }

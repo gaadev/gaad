@@ -5,7 +5,6 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"gaad/common"
 	"gaad/models"
 	"gaad/web/controllers"
 	"github.com/gin-gonic/gin"
@@ -61,14 +60,14 @@ func HandleWsAndShell(node *models.Node, cols, rows int, c *gin.Context) {
 	//升级为websocket
 	ws, err := upGrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
-		controllers.Response(c, common.ParameterIllegal, "协议升级失败", nil)
+		controllers.Response(models.ParameterIllegal, "协议升级失败", nil)
 		return
 	}
 	defer ws.Close()
 	//创建shell
 	shell, err := createShell(node)
 	if err != nil {
-		controllers.Response(c, common.ParameterIllegal, "创建shell失败", nil)
+		controllers.Response(models.ParameterIllegal, "创建shell失败", nil)
 		return
 	}
 	defer shell.Close()

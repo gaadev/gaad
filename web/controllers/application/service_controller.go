@@ -22,48 +22,66 @@ import (
 // @Accept  json
 // @Produce json
 // @Param data body models.Service true "Data"
-// @Success 200 {object} common.JsonResult
+// @Success 200 {object} models.Rsp
 // @Router /service/createService [post]
 // @Tags 服务(Service)
 func CreateService(c *gin.Context) {
 	service := models.Service{}
-	base.Create(c, &service, func(c *gin.Context) error {
+	rsp := base.Create(c, &service, func() *models.Rsp {
 		if service.ServiceName == "" {
-			return controllers.Response(c, common.ParameterIllegal, "", nil)
+			return controllers.Response(models.ParameterIllegal, "", nil)
 		}
 		serv := models.Service{}
 		sqlitedb.First(&serv, "service_code = ?", service.ServiceCode)
 		//pro.Id > 0说明已经存在
 		if serv.ID > 0 {
-			return controllers.Response(c, common.OperationFailure, "服务标识重复", nil)
+			return controllers.Response(models.OperationFailure, "服务标识重复", nil)
 		}
 		//系统内部查看project,填充资料
 		proj := models.Project{}
-		sqlitedb.First(&proj, "ID = ?", serv.ProjectId)
+		sqlitedb.First(&proj, "ID = ?", service.ProjectId)
 		if proj.ID < 0 {
-			return controllers.Response(c, common.OperationFailure, "项目不存在", nil)
+			return controllers.Response(models.OperationFailure, "项目不存在", nil)
 		}
-		serv.ProjectName = proj.ProjectName
-		serv.WsCode = proj.WsCode
-		return nil
+		service.ProjectName = proj.ProjectName
+		service.WsCode = proj.WsCode
+		if service.DevopsOpts == "" {
+			service.DevopsOpts = "{}"
+		}
+
+ 		return nil
 	})
+	if rsp != nil {
+		rsp.Write(c)
+	}  else {
+		controllers.Response(models.OK, "", nil).Write(c)
+	}
 }
 
 // @Description 更新项目
 // @Accept  json
 // @Produce json
 // @Param data body models.Service true "Data"
-// @Success 200 {object} common.JsonResult
+// @Success 200 {object} models.Rsp
 // @Router /service/updateService [put]
 // @Tags 服务(Service)
 func UpdateService(c *gin.Context) {
 	service := models.Service{}
-	base.Update(c, &service, func(c *gin.Context) error {
+	rsp := base.Update(c, &service, func() *models.Rsp {
 		if service.ServiceName == "" {
-			return controllers.Response(c, common.ParameterIllegal, "", nil)
+			return controllers.Response(models.ParameterIllegal, "", nil)
+		}
+		if service.DevopsOpts == "" {
+			service.DevopsOpts = "{}"
 		}
 		return nil
 	})
+
+	if rsp != nil {
+		rsp.Write(c)
+	}  else {
+		controllers.Response(models.OK, "", nil).Write(c)
+	}
 
 }
 
@@ -71,26 +89,31 @@ func UpdateService(c *gin.Context) {
 // @Accept  json
 // @Produce json
 // @Param data body models.Service true "Data"
-// @Success 200 {object} common.JsonResult
+// @Success 200 {object} models.Rsp
 // @Router /service/deleteService [delete]
 // @Tags 服务(Service)
 func DeleteService(c *gin.Context) {
-	base.Delete(c, &models.Service{})
+	rsp := base.Delete(c, &models.Service{})
+	if rsp != nil {
+		rsp.Write(c)
+	}  else {
+		controllers.Response(models.OK, "", nil).Write(c)
+	}
 }
 
 // @Description 分页查询项目
 // @Accept  json
 // @Produce json
 // @Param data body models.Service true "Data"
-// @Success 200 {object} common.JsonResult
+// @Success 200 {object} models.Rsp
 // @Router /service/pageServices [post]
 // @Tags 服务(Service)
 func PageServices(c *gin.Context) {
 	service := models.Service{}
 	var services []models.Service
 
-	base.Page(c, &service, &services,
-		func(c *gin.Context) error {
+	rsp := base.Page(c, &service, &services,
+		func() *models.Rsp {
 			return nil
 		},
 		func() (query interface{}, where []interface{}) {
@@ -104,6 +127,11 @@ func PageServices(c *gin.Context) {
 
 			return
 		})
+	if rsp != nil {
+		rsp.Write(c)
+	}  else {
+		controllers.Response(models.OK, "", nil).Write(c)
+	}
 }
 
 func toDevopsOpt(buildOpt string) string {
@@ -114,6 +142,10 @@ func toDevopsOpt(buildOpt string) string {
 		return "--build-tool"
 	case "Workspace":
 		return "--workspace"
+	case "Dockerfile":
+		return "--dockerfile"
+	case "Template":
+		return "--template"
 	case "GitUrl":
 		return "--git-url"
 	case "GitBranch":
@@ -129,8 +161,8 @@ func GenDevopsCmd(service *models.Service) (cmd string) {
 	build.WriteString("devops run ")
 	build.WriteString(service.Lang)
 	build.WriteString(" ")
-	conCatOptFeildAndValue(build, toDevopsOpt("GitUrl"), service.GitUrl)
-	conCatOptFeildAndValue(build, toDevopsOpt("GitBranch"), service.GitBranch)
+	conCatOptFeildAndValue(&build, toDevopsOpt("GitUrl"), service.GitUrl)
+	conCatOptFeildAndValue(&build, toDevopsOpt("GitBranch"), service.GitBranch)
 	build.WriteString(GenDevopsOpts(service))
 	build.WriteString(" ")
 	build.WriteString(service.ServiceCode)
@@ -139,32 +171,34 @@ func GenDevopsCmd(service *models.Service) (cmd string) {
 }
 
 func GenDevopsOpts(service *models.Service) string {
-
 	devopsOpts := models.DevopsOpts{}
-	err := json.Unmarshal([]byte(service.DevopsOpts), &devopsOpts)
-	if err != nil {
-		log.Fatal(err)
-	}
+	json.Unmarshal([]byte(service.DevopsOpts), &devopsOpts)
 	var build strings.Builder
 
 	t := reflect.TypeOf(devopsOpts)
 	v := reflect.ValueOf(devopsOpts)
 	for k := 0; k < t.NumField(); k++ {
 		if v.Field(k).String() != "" {
-			conCatOptFeildAndValue(build, toDevopsOpt(t.Field(k).Name), v.Field(k).String())
+			conCatOptFeildAndValue(&build, toDevopsOpt(t.Field(k).Name), v.Field(k).String())
 		}
 	}
-	conCatOptFeildAndValue(build, toDevopsOpt("Workspace"), service.WsCode)
+	if service.Dockerfile != "" {
+		conCatOptFeildAndValue(&build, toDevopsOpt("Dockerfile"), service.Dockerfile)
+	}
+	if service.Template != "" {
+		conCatOptFeildAndValue(&build, toDevopsOpt("Template"), service.Template)
+	}
+	conCatOptFeildAndValue(&build, toDevopsOpt("Workspace"), service.WsCode)
 
 	OptStr := build.String()
 	return OptStr
 
 }
 
-func conCatOptFeildAndValue(build strings.Builder, key string, value string) {
+func conCatOptFeildAndValue(build *strings.Builder, key string, value string) {
 	build.WriteString(" ")
 	build.WriteString(key)
-	build.WriteString("='")
+	build.WriteString(" '")
 	build.WriteString(value)
 	build.WriteString("' ")
 }
@@ -172,7 +206,7 @@ func conCatOptFeildAndValue(build strings.Builder, key string, value string) {
 // @Description 部署的接口还未完善
 // @Accept  json
 // @Produce json
-// @Success 200 {object} common.JsonResult
+// @Success 200 {object} models.Rsp
 // @Router /service/deploy [post]
 // @Tags 服务(Service)
 func Deploy(c *gin.Context) {
@@ -185,7 +219,7 @@ func Deploy(c *gin.Context) {
 
 	err := base.GetModel(&service, c)
 	if err != nil {
-		controllers.Response(c, common.ParameterIllegal, "参数格式有误", nil)
+		controllers.Response(models.ParameterIllegal, "参数格式有误", nil).Write(c)
 		return
 	}
 
@@ -196,55 +230,65 @@ func Deploy(c *gin.Context) {
 		devopsCmd = GenDevopsCmd(serv)
 
 	} else {
-		controllers.Response(c, common.OperationFailure, "操作失败，服务未启用", nil)
+		controllers.Response(models.OperationFailure, "操作失败，服务未启用", nil).Write(c)
 		return
 	}
 
-	par := []string{
-		"-c",
-		"cd ./script/devops/bin; ./" + devopsCmd,
-	}
 
-	devopsNum := boltdb.View(getServiceDevopsNumKey(service))
-	num, err := strconv.Atoi(devopsNum)
-	boltdb.Update(service.WsCode+":"+service.ServiceCode, strconv.Itoa(num+1))
+	go func() {
 
-	logPath := GetLogPath(service)
-	logFilePath := logPath + strconv.Itoa(num+1) + ".log"
-	common.CreateFile(logFilePath)
+		par := []string{
+			"-c",
+			"cd ./script/devops/bin; ./" + devopsCmd,
+		}
 
-	retErr := common.DeployCommand(service, logFilePath, "/bin/sh", par)
+		devopsNum := boltdb.View(getServiceDevopsNumKey(service))
+		num, _ := strconv.Atoi(devopsNum)
+		boltdb.Update(service.WsCode+":"+service.ServiceCode, strconv.Itoa(num+1))
 
-	if retErr == nil {
-		status = 1
-	} else {
-		status = 2
-	}
+		logPath := GetLogPath(service)
+		logFilePath := logPath + strconv.Itoa(num+1) + ".log"
+		common.CreateFile(logFilePath)
 
-	deploy := &models.Deploy{ServiceId: service.ID, ServiceName: service.ServiceName,
-		ServiceCode: service.ServiceCode, DeployNum: strconv.Itoa(num + 1), LogFilePath: logFilePath, Status: status}
-	sqlitedb.Create(deploy)
+		retErr := common.DeployCommand(service, logFilePath, "/bin/sh", par)
 
-	data := make(map[string]interface{})
+		if retErr == nil {
+			status = 1
+		} else {
+			status = 2
+		}
 
-	data["status"] = "ok"
+		deploy := &models.Deploy{ServiceId: service.ID, ServiceName: service.ServiceName,
+			ServiceCode: service.ServiceCode, DeployNum: strconv.Itoa(num + 1), LogFilePath: logFilePath, Status: status}
+		sqlitedb.Create(deploy)
 
-	controllers.Response(c, common.OK, "", data)
+		data := make(map[string]interface{})
 
+		data["status"] = "ok"
+
+	}()
+
+	controllers.Response(models.OK, "开始构建", "").Write(c)
 }
 
 // @Description 查询所有项目
 // @Accept  json
 // @Produce json
 // @Param data body models.Project true "Data"
-// @Success 200 {object} common.JsonResult
+// @Success 200 {object} models.Rsp
 // @Router /service/ListDevops [post]
 // @Tags 服务(Service)
 func ListDevops(c *gin.Context) {
 	var deploys []models.Deploy
-	base.List(c, &deploys, func() (where []interface{}) {
+	rsp := base.List(c, &deploys, func() (where []interface{}) {
 		return nil
 	})
+	if rsp != nil && rsp.Code != 200 {
+		rsp.Write(c)
+		return
+	}
+
+	controllers.Response(models.OK, "", nil).Write(c)
 
 }
 
@@ -259,7 +303,7 @@ func getServiceDevopsNumKey(service models.Service) string {
 // @Description 展示
 // @Accept  json
 // @Produce json
-// @Success 200 {object} common.JsonResult
+// @Success 200 {object} models.Rsp
 // @Router /service/display [post]
 // @Tags 服务(Service)
 func Display(c *gin.Context) {
@@ -271,7 +315,7 @@ func Display(c *gin.Context) {
 
 	err := base.GetModel(&service, c)
 	if err != nil {
-		controllers.Response(c, common.ParameterIllegal, "参数格式有误", nil)
+		controllers.Response(models.ParameterIllegal, "参数格式有误", nil).Write(c)
 		return
 	}
 	logNum := c.Query("logNum")
@@ -315,6 +359,6 @@ func Display(c *gin.Context) {
 	data["data"] = builder.String()
 	data["end"] = count
 
-	controllers.Response(c, common.OK, "", data)
+	controllers.Response(models.OK, "", data).Write(c)
 
 }
