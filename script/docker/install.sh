@@ -32,13 +32,13 @@ function config_yum_source() {
 function config_yum_source_centos() {
   sleep 5
   sudo rm -rf /etc/yum.repos.d/*docker* \
-  /etc/yum.repos.d/*epel* /etc/yum.repos.d/*elrepo*
+    /etc/yum.repos.d/*epel* /etc/yum.repos.d/*elrepo*
   wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo
   wget -O /etc/yum.repos.d/epel.repo http://mirrors.aliyun.com/repo/epel-7.repo
   #配置docker 镜像源
-   #配置docker 镜像源
+  #配置docker 镜像源
   wget -O /etc/yum.repos.d/docker-ce.repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
-#  yum update -y
+  #  yum update -y
   yum makecache fast
 }
 
@@ -53,10 +53,11 @@ function config_yum_source_ubuntu() {
 }
 
 function install_docker() {
+  version=$1
   if [[ ${linux_version} =~ "CentOS" ]]; then
-    install_docker_centos
+    install_docker_centos $version
   else
-    install_docker_ubuntu
+    install_docker_ubuntu $version
   fi
 }
 
@@ -65,19 +66,29 @@ function install_docker_ubuntu() {
   sleep 25
   hlog "Ubuntu开始安装docker"
   #step1: 卸载docker相关
-  sudo apt-get remove  docker* containerd  runc || :
+  sudo apt-get remove docker* containerd runc || :
   #step2: 安装必要的一些系统工具
-#  sudo apt-get update -y
+  sudo apt-get update -y
   sudo apt-get -y install apt-transport-https ca-certificates curl gnupg-agent software-properties-common
   # step 3: 安装GPG证书
   curl -fsSL http://mirrors.aliyun.com/docker-ce/linux/ubuntu/gpg | sudo apt-key add -
   #step4: 写入软件源信息
-  sudo  add-apt-repository "deb [arch=amd64] http://mirrors.aliyun.com/docker-ce/linux/ubuntu $(lsb_release -cs) stable"
+  kernel_type=$(arch)
+  if [[ ${kernel_type} =~ 'x86_64' || ${kernel_type} =~ 'amd64' ]]; then
+    sudo add-apt-repository "deb [arch=amd64] http://mirrors.aliyun.com/docker-ce/linux/ubuntu $(lsb_release -cs) stable"
+  elif [[ ${kernel_type} =~ 'armhf' ]]; then
+    sudo add-apt-repository "deb [arch=armhf] https://mirrors.aliyun.com/docker-ce/linux/ubuntu $(lsb_release -cs) stable"
+  elif [[ ${kernel_type} =~ 'arm64' ]]; then
+    sudo add-apt-repository "deb [arch=arm64] https://mirrors.aliyun.com/docker-ce/linux/ubuntu $(lsb_release -cs) stable"
+  else
+    info '无法识别'
+    sudo add-apt-repository "deb [arch=amd64] http://mirrors.aliyun.com/docker-ce/linux/ubuntu $(lsb_release -cs) stable"
+  fi
   #step5: 更新并安装 Docker-CE
   sudo apt-get -y update
   version=$1
   if test -n "$version"; then
-#    sudo  apt-get install -y docker-ce=<VERSION_STRING> docker-ce-cli=<VERSION_STRING> containerd.io
+    sudo apt-get install -y docker-ce= <VERSION_STRING >docker-ce-cli= <VERSION_STRING >containerd.io
   else
     sudo apt-get -y install docker-ce
   fi
@@ -102,7 +113,7 @@ function install_docker_centos() {
   sleep 25
   hlog "CentOS开始安装docker"
   #step1: 卸载docker相关
-  sudo yum remove -y containerd.io docker*  || :
+  sudo yum remove -y containerd.io docker* || :
   #step5: 按照docker-ce
   #yum list docker-ce --showduplicates|sort -r #可以查看镜像
   version=$1
