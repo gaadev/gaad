@@ -8,7 +8,6 @@
 package main
 
 import (
-	"fmt"
 	"gaad/initialize"
 	"gaad/routers"
 )

@@ -49,11 +49,11 @@ func CreateService(c *gin.Context) {
 			service.DevopsOpts = "{}"
 		}
 
- 		return nil
+		return nil
 	})
 	if rsp != nil {
 		rsp.Write(c)
-	}  else {
+	} else {
 		controllers.Response(models.OK, "", nil).Write(c)
 	}
 }
@@ -79,7 +79,7 @@ func UpdateService(c *gin.Context) {
 
 	if rsp != nil {
 		rsp.Write(c)
-	}  else {
+	} else {
 		controllers.Response(models.OK, "", nil).Write(c)
 	}
 
@@ -96,7 +96,7 @@ func DeleteService(c *gin.Context) {
 	rsp := base.Delete(c, &models.Service{})
 	if rsp != nil {
 		rsp.Write(c)
-	}  else {
+	} else {
 		controllers.Response(models.OK, "", nil).Write(c)
 	}
 }
@@ -118,10 +118,14 @@ func PageServices(c *gin.Context) {
 		},
 		func() (query interface{}, where []interface{}) {
 			where = make([]interface{}, 0)
-			sql := "1 = 1"
+			sql := "1 = 1 "
 			if service.ServiceName != "" {
-				query = "service_name like ?"
+				sql += " and service_name like ? "
 				where = append(where, "%"+service.ServiceName+"%")
+			}
+			if service.ProjectId != 0 {
+				sql += " and project_id = ? "
+				where = append(where, service.ProjectId)
 			}
 			query = sql
 
@@ -129,7 +133,7 @@ func PageServices(c *gin.Context) {
 		})
 	if rsp != nil {
 		rsp.Write(c)
-	}  else {
+	} else {
 		controllers.Response(models.OK, "", nil).Write(c)
 	}
 }
@@ -233,7 +237,6 @@ func Deploy(c *gin.Context) {
 		controllers.Response(models.OperationFailure, "操作失败，服务未启用", nil).Write(c)
 		return
 	}
-
 
 	go func() {
 
