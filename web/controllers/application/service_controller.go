@@ -219,7 +219,7 @@ func Deploy(c *gin.Context) {
 		devopsCmd string
 		status    int
 	)
-	service := models.Service{}
+	service := &models.Service{}
 
 	err := base.GetModel(&service, c)
 	if err != nil {
@@ -245,13 +245,15 @@ func Deploy(c *gin.Context) {
 			"cd ./script/devops/bin; ./" + devopsCmd,
 		}
 
-		devopsNum := boltdb.View(getServiceDevopsNumKey(service))
-		num, _ := strconv.Atoi(devopsNum)
+		num:= serv.DeployNum
 		boltdb.Update(service.WsCode+":"+service.ServiceCode, strconv.Itoa(num+1))
 
 		logPath := GetLogPath(service)
+		common.CreateFile(logPath)
 		logFilePath := logPath + strconv.Itoa(num+1) + ".log"
-		common.CreateFile(logFilePath)
+
+		serv.DeployNum = num + 1
+		sqlitedb.Update(serv)
 
 		retErr := common.DeployCommand(service, logFilePath, "/bin/sh", par)
 
@@ -262,7 +264,7 @@ func Deploy(c *gin.Context) {
 		}
 
 		deploy := &models.Deploy{ServiceId: service.ID, ServiceName: service.ServiceName,
-			ServiceCode: service.ServiceCode, DeployNum: strconv.Itoa(num + 1), LogFilePath: logFilePath, Status: status}
+			ServiceCode: service.ServiceCode, DeployNum: num + 1, LogFilePath: logFilePath, Status: status}
 		sqlitedb.Create(deploy)
 
 		data := make(map[string]interface{})
@@ -274,55 +276,64 @@ func Deploy(c *gin.Context) {
 	controllers.Response(models.OK, "开始构建", "").Write(c)
 }
 
-// @Description 查询所有项目
+// @Description 查询当前服务的deploy
 // @Accept  json
 // @Produce json
-// @Param data body models.Project true "Data"
+// @Param  serviceId query  string  true "serviceId"
 // @Success 200 {object} models.Rsp
-// @Router /service/ListDevops [post]
+// @Router /service/listDevops [get]
 // @Tags 服务(Service)
 func ListDevops(c *gin.Context) {
+	serviceId := c.Query("serviceId")
+	if serviceId == "" {
+		controllers.Response(models.OperationFailure, "serviceId不能为空", nil).Write(c)
+	}
 	var deploys []models.Deploy
-	rsp := base.List(c, &deploys, func() (where []interface{}) {
-		return nil
+	rsp := base.List( &deploys, func() (where []interface{}) {
+
+		where = make([]interface{}, 0)
+
+		sql := "service_id = ? "
+		where = append(where, sql)
+		where = append(where,serviceId)
+		return
 	})
 	if rsp != nil && rsp.Code != 200 {
 		rsp.Write(c)
 		return
 	}
-
-	controllers.Response(models.OK, "", nil).Write(c)
-
+	rsp.Write(c)
 }
 
-func GetLogPath(service models.Service) string {
+func GetLogPath(service *models.Service) string {
 	return "./script/devops/workspace/" + service.WsCode + "/log/" + service.ServiceCode + "/"
 }
 
-func getServiceDevopsNumKey(service models.Service) string {
+func getServiceDevopsNumKey(service *models.Service) string {
 	return service.WsCode + ":" + service.ServiceCode + ":" + "devopsNum"
 }
+
+
 
 // @Description 展示
 // @Accept  json
 // @Produce json
-// @Success 200 {object} models.Rsp
-// @Router /service/display [post]
+// @Param  serviceId query  string  true "serviceId"
+// @Param  logNum query  string  false "logNum"
+// @Param  start query  string  false "start"
+// @Router /service/display [get]
 // @Tags 服务(Service)
 func Display(c *gin.Context) {
 	var (
 		count   int
 		builder strings.Builder
 	)
-	service := models.Service{}
-
-	err := base.GetModel(&service, c)
-	if err != nil {
-		controllers.Response(models.ParameterIllegal, "参数格式有误", nil).Write(c)
-		return
-	}
+	serviceId := c.Query("serviceId")
 	logNum := c.Query("logNum")
 	startStr := c.Query("start")
+
+	serv :=  &models.Service{}
+	sqlitedb.GetById(serv,serviceId)
 	if startStr == "" {
 		startStr = "1"
 	}
@@ -330,7 +341,13 @@ func Display(c *gin.Context) {
 
 	flag.Parse()
 
-	logPath := GetLogPath(service)
+	logPath := GetLogPath(serv)
+	if logNum == "" {
+		logNum = "1"
+	}
+	if serv.DeployNum != 0  {
+		logNum =  strconv.Itoa(serv.DeployNum)
+	}
 	f, err := os.Open(logPath + logNum + ".log")
 	if err != nil {
 		log.Fatal(err)
@@ -356,12 +373,9 @@ func Display(c *gin.Context) {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	data := make(map[string]interface{})
-
-	data["data"] = builder.String()
-	data["end"] = count
-
-	controllers.Response(models.OK, "", data).Write(c)
+	count++
+	c.Writer.Header().Add("Content-Type","text/html;charset=utf-8")
+	c.Writer.Header().Add("X-Text-Lines", strconv.Itoa(count))
+	c.Writer.Write([]byte(builder.String()))
 
 }

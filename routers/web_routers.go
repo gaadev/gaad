@@ -72,7 +72,8 @@ func InitWebRouters() {
 		serviceRouter.PUT("/updateService", application.UpdateService)
 		serviceRouter.DELETE("/deleteService", application.DeleteService)
 		serviceRouter.POST("/deploy", application.Deploy)
-		serviceRouter.POST("/display", application.Display)
+		serviceRouter.GET("/display", application.Display)
+		serviceRouter.GET("/listDevops", application.ListDevops)
 	}
 
 	wsRouter := router.Group("/ws")

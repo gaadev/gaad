@@ -268,7 +268,7 @@ func PageNodesForCluster(c *gin.Context) {
 // @Tags 集群(Cluster)
 func ListClusters(c *gin.Context) {
 	var clusters []models.Cluster
-	rsp := base.List(c, &clusters, func() (where []interface{}) {
+	rsp := base.List( &clusters, func() (where []interface{}) {
 		where = make([]interface{}, 0)
 		where = append(where, "status = 1")
 		return

@@ -34,6 +34,17 @@ func First(model interface{}, where ...interface{}) {
 	db.First(model, where...) // 查询id为1的product
 }
 
+
+func GetById(model interface{}, id string) {
+	db, err := gorm.Open(dialect, dbFile)
+	if err != nil {
+		panic("连接数据库失败")
+	}
+	defer db.Close()
+
+	db.First(model, "ID = ?",id) // 查询id为1的product
+}
+
 func QueryPage(curPage int, PageRecord int, models interface{}, query interface{}, args ...interface{}) int {
 	db, err := gorm.Open(dialect, dbFile)
 	if err != nil {

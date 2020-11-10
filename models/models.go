@@ -64,6 +64,7 @@ type Service struct {
 	ProjectName string `json:"projectName,omitempty"`
 	Dockerfile  string `json:"dockerfile,omitempty"`
 	Template    string `json:"template,omitempty"`
+	DeployNum   int `json:"deployNum,omitempty"`
 	Status      int    `json:"status,omitempty"`
 	Remark      string `json:"remark,omitempty"`
 }
@@ -73,7 +74,7 @@ type Deploy struct {
 	ServiceId   uint   `json:"serviceId,omitempty"`
 	ServiceName string `json:"serviceName,omitempty"`
 	ServiceCode string `json:"serviceCode,omitempty"`
-	DeployNum   string `json:"deployNum,omitempty"`
+	DeployNum   int    `json:"deployNum,omitempty"`
 	Status      int    `json:"status,omitempty"` //1成功，2失败
 	LogFilePath string `json:"logFilePath,omitempty"`
 }

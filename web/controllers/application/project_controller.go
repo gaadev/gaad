@@ -166,7 +166,7 @@ func PageProjects(c *gin.Context) {
 // @Tags 项目(Project)
 func ListProjects(c *gin.Context) {
 	var projects []models.Project
-	rsp := base.List(c, &projects, func() (where []interface{}) {
+	rsp := base.List( &projects, func() (where []interface{}) {
 		where = make([]interface{}, 0)
 		where = append(where, "status = 1")
 		return

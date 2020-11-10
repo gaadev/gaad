@@ -53,7 +53,7 @@ func ExecCommand(commandName string, params []string) error {
 }
 
 //封装一个函数来执行命令
-func DeployCommand(service models.Service, logFilePath string, commandName string, params []string) error {
+func DeployCommand(service *models.Service, logFilePath string, commandName string, params []string) error {
 
 	//执行命令
 	cmd := exec.Command(commandName, params...)

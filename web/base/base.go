@@ -89,7 +89,7 @@ func createOrUpdate(opreation string, c *gin.Context, model interface{}, checkPa
 	return controllers.Response(models.OK, "", nil)
 }
 
-func List(c *gin.Context, entities interface{}, handler WhereHandler) *models.Rsp  {
+func List( entities interface{}, handler WhereHandler) *models.Rsp  {
 	where := handler()
 	sqlitedb.QueryList(entities, where...)
 	return controllers.Response(models.OK, "", entities)
