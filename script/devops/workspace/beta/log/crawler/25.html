@@ -1,0 +1,78 @@
+[37m➜ 埋点: 当前的工作空间为:beta(B[m
+[37m➜ 开始使用git拉取代码,当前分支:master(B[m
+埋点:git的real_branch:master
+埋点:执行命令行,指定dockerfile:python
+[37m➜ 开始python项目镜像的构建(B[m
+Sending build context to Docker daemon  203.8kB
+Step 1/8 : FROM unsun2020/python-scrapy
+ ---> a5c4aa6abbcd
+Step 2/8 : MAINTAINER "srillia@163.com"
+ ---> Using cache
+ ---> f2aa4c6f2ec6
+Step 3/8 : LABEL maintainer='corp'
+ ---> Using cache
+ ---> 898af1837fba
+Step 4/8 : ENV TZ=Asia/Shanghai
+ ---> Using cache
+ ---> e3c72fb0c48e
+Step 5/8 : ENV LANG=en_US.UTF-8i
+ ---> Using cache
+ ---> e51dd87721b0
+Step 6/8 : copy ./ /opt/crawler/
+ ---> ae585dc7a66d
+Step 7/8 : WORKDIR /opt/crawler/cmd
+ ---> Running in 3c20b2c6766b
+Removing intermediate container 3c20b2c6766b
+ ---> 1038c2bd8656
+Step 8/8 : CMD python scrapy_cmd.py
+ ---> Running in a134579e9b35
+Removing intermediate container a134579e9b35
+ ---> 6d461412405e
+Successfully built 6d461412405e
+Successfully tagged harbor.jsy.com/gaad/crawler:4eacab7_2020.11.11-14.49.33
+[37m➜ 开始向python推送镜像(B[m
+The push refers to repository [harbor.jsy.com/gaad/crawler]
+423f5dcb0e59: Preparing
+75e8eaeef6f3: Preparing
+d1ebc7cb1c79: Preparing
+2d1df56b7419: Preparing
+1599e1b6958c: Preparing
+95dd21292ebd: Preparing
+c90770d130e3: Preparing
+5b065ed609d0: Preparing
+0fb2e27dc3b8: Preparing
+a995c5106335: Preparing
+17bdf5e22660: Preparing
+d37096232ed8: Preparing
+6add0d2b5482: Preparing
+4ef54afed780: Preparing
+c90770d130e3: Waiting
+5b065ed609d0: Waiting
+d37096232ed8: Waiting
+0fb2e27dc3b8: Waiting
+6add0d2b5482: Waiting
+a995c5106335: Waiting
+4ef54afed780: Waiting
+17bdf5e22660: Waiting
+95dd21292ebd: Waiting
+75e8eaeef6f3: Layer already exists
+2d1df56b7419: Layer already exists
+d1ebc7cb1c79: Layer already exists
+1599e1b6958c: Layer already exists
+c90770d130e3: Layer already exists
+95dd21292ebd: Layer already exists
+5b065ed609d0: Layer already exists
+0fb2e27dc3b8: Layer already exists
+a995c5106335: Layer already exists
+17bdf5e22660: Layer already exists
+d37096232ed8: Layer already exists
+6add0d2b5482: Layer already exists
+4ef54afed780: Layer already exists
+423f5dcb0e59: Pushed
+4eacab7_2020.11.11-14.49.33: digest: sha256:5c90aef945e39c04510e2673a9a82ea157244782f9013294136bc98cc4683e9f size: 3269
+执行远程部署
+[37m➜ 开始使用docker swarm部署服务(B[m
+spawn bash -c cat /home/srillia/GolandProjects/gaad/script/devops/deploy/beta/crawler.yml | ssh root@192.168.10.231 'docker stack deploy -c - gaad --with-registry-auth'
+root@192.168.10.231's password: 
+Updating service gaad_crawler (id: 6p2c16jhg7rzl24eeqol10fjb)
+[37m➜ 现有corp镜像数为：20(B[m
