@@ -217,28 +217,13 @@ function scm() {
   fi
 }
 
-
-function process_host() {
-  host=$1
-  exist=`echo $host | grep ":"`
-  echo $exist
-  if test -n "$exist"  ; then
-          port=${host##*:}
-          echo $port
-          if test "$port" = "80" ; then
-                  host=${host%%:*}
-                  echo $host
-          fi
-  fi
-}
-
 function go_build() {
   cfg_temp_dir=${dic[cfg_temp_dir]}
   cmd_job_name=${dic[cmd_job_name]}
   opt_build_tool=${dic[opt_build_tool]}
   opt_build_cmds=${dic[opt_build_cmds]}
-  cfg_docker_registry_address=${dic[cfg_docker_registry_address]}
-  cfg_docker_registry_root=${dic[cfg_docker_registry_root]}
+  cfg_harbor_address=${dic[cfg_harbor_address]}
+  cfg_harbor_project=${dic[cfg_harbor_project]}
   tmp_dockerfile=${dic[tmp_dockerfile]}
   tmp_docker_image_suffix=${dic[tmp_docker_image_suffix]}
 
@@ -276,7 +261,7 @@ function go_build() {
 
   check_env_by_cmd_v docker
   # 构建镜像
-  image_path=$cfg_docker_registry_address/$cfg_docker_registry_root/${cmd_job_name}:${tmp_docker_image_suffix}
+  image_path=$cfg_harbor_address/$cfg_harbor_project/${cmd_job_name}:${tmp_docker_image_suffix}
   tar -cf dist.tar *
   sudo docker build --build-arg DEVOPS_RUN_ENV=${dic[opt_build_env]} \
     -t $image_path -f $tmp_dockerfile ${dic[tmp_build_dist_path]}
@@ -294,8 +279,8 @@ function java_build() {
   opt_build_cmds=${dic[opt_build_cmds]}
   opt_java_opts=${dic[opt_java_opts]}
   tmp_dockerfile=${dic[tmp_dockerfile]}
-  cfg_docker_registry_address=${dic[cfg_docker_registry_address]}
-  cfg_docker_registry_root=${dic[cfg_docker_registry_root]}
+  cfg_harbor_address=${dic[cfg_harbor_address]}
+  cfg_harbor_project=${dic[cfg_harbor_project]}
   tmp_docker_image_suffix=${dic[tmp_docker_image_suffix]}
 
   module_path=$(find $cfg_temp_dir/* -type d -name ${cmd_job_name})
@@ -335,12 +320,12 @@ function java_build() {
 
   # 查找jar包名
   cd ${dic[tmp_build_dist_path]}
-  jar_name=$(ls | grep -v 'source' | grep ${cmd_job_name})
+  jar_name=$(ls | grep -v 'source' | grep "^${cmd_job_name}.*\.jar$")
 
   check_env_by_cmd_v docker
 
   # 构建镜像
-  image_path=$cfg_docker_registry_address/$cfg_docker_registry_root/${cmd_job_name}:${tmp_docker_image_suffix}
+  image_path=$cfg_harbor_address/$cfg_harbor_project/${cmd_job_name}:${tmp_docker_image_suffix}
   sudo docker build --build-arg jar_name=$jar_name \
     --build-arg java_opts="$opt_java_opts" \
     -t $image_path -f $tmp_dockerfile ${dic[tmp_build_dist_path]}
@@ -356,8 +341,8 @@ function vue_build() {
   cmd_job_name=${dic[cmd_job_name]}
   opt_build_cmds=${dic[opt_build_cmds]}
   opt_build_env=${dic[opt_build_env]}
-  cfg_docker_registry_address=${dic[cfg_docker_registry_address]}
-  cfg_docker_registry_root=${dic[cfg_docker_registry_root]}
+  cfg_harbor_address=${dic[cfg_harbor_address]}
+  cfg_harbor_project=${dic[cfg_harbor_project]}
   tmp_dockerfile=${dic[tmp_dockerfile]}
   tmp_docker_image_suffix=${dic[tmp_docker_image_suffix]}
 
@@ -382,7 +367,7 @@ function vue_build() {
   tar -cf dist.tar *
   check_env_by_cmd_v docker
   # 构建镜像
-  image_path=$cfg_docker_registry_address/$cfg_docker_registry_root/${cmd_job_name}:${tmp_docker_image_suffix}
+  image_path=$cfg_harbor_address/$cfg_harbor_project/${cmd_job_name}:${tmp_docker_image_suffix}
   sudo docker build -t $image_path -f $tmp_dockerfile ${dic[tmp_build_dist_path]}
 
   #推送镜像
@@ -394,19 +379,19 @@ function vue_build() {
 function python_build() {
   cfg_temp_dir=${dic[cfg_temp_dir]}
   cmd_job_name=${dic[cmd_job_name]}
-  opt_build_cmds=${dic[opt_build_cmds]}
-  cfg_docker_registry_address=${dic[cfg_docker_registry_address]}
-  cfg_docker_registry_root=${dic[cfg_docker_registry_root]}
+  cfg_harbor_address=${dic[cfg_harbor_address]}
+  cfg_harbor_project=${dic[cfg_harbor_project]}
   tmp_dockerfile=${dic[tmp_dockerfile]}
   tmp_docker_image_suffix=${dic[tmp_docker_image_suffix]}
   module_path=$(find $cfg_temp_dir/* -type d -name ${cmd_job_name})
   if test -z "$module_path"; then module_path=$cfg_temp_dir; fi
   dic[tmp_build_dist_path]=$module_path
+  echo "xxxx:"${dic[tmp_build_dist_path]}
   info "开始python项目镜像的构建"
   cd ${dic[tmp_build_dist_path]}
   check_env_by_cmd_v docker
   # 构建镜像
-  image_path=$cfg_docker_registry_address/$cfg_docker_registry_root/${cmd_job_name}:${tmp_docker_image_suffix}
+  image_path=$cfg_harbor_address/$cfg_harbor_project/${cmd_job_name}:${tmp_docker_image_suffix}
   sudo docker build -t $image_path -f $tmp_dockerfile ${dic[tmp_build_dist_path]}
 
   #推送镜像
@@ -450,7 +435,7 @@ function choose_dockerfile() {
 function render_template() {
   opt_template=${dic[opt_template]}
   cfg_devops_path=${dic[cfg_devops_path]}
-  cfg_swarm_network=${dic[cfg_swarm_stack_name]}
+  cfg_swarm_network=${dic[cfg_swarm_network]}
   cfg_template_path=${dic[cfg_template_path]}
   cfg_enable_templates=${dic[cfg_enable_templates]}
   cfg_deploy_gen_location=${dic[cfg_deploy_gen_location]}
@@ -461,6 +446,7 @@ function render_template() {
   cd $cfg_template_path
   gen_long_time_str=$(date +%s%N)
 
+  info "${opt_template}"
   #处理模板路由信息
   if test -n "${opt_template}"; then
     \cp ./${opt_template}-template.yml ./${gen_long_time_str}.yml
@@ -520,14 +506,6 @@ function local_deploy() {
   else
     info "开始使用docker swarm部署服务"
     sudo docker stack deploy -c ${deploy_job_yml} ${cfg_swarm_stack_name} --with-registry-auth
-  fi
-}
-
-function check_swarm_gaad_network() {
-  gaad_network=${dic[cfg_swarm_stack_name]}
-  network=`sudo docker network ls | grep -w $gaad_network | awk '{ print $2 }'`
-  if [ -z "$network" -o  "$gaad_network" != "$network" ] ;then
-    sudo docker network create --driver overlay "$gaad_network"
   fi
 }
 
@@ -594,3 +572,4 @@ function prune() {
     fi
   fi
 }
+

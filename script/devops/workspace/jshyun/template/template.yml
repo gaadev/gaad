@@ -1,7 +1,7 @@
 version: '3.4'
 services:
-  crawler:
-    image: harbor.jsy.com/gaad/crawler:4eacab7_2020.10.26-14.44.48
+  ?module_name:
+    image: ?image_path
 #    ports:
 #      - "?port:80"
     deploy:
@@ -20,7 +20,7 @@ services:
         reservations:
           memory: 250M
     networks:
-      - gaad
+      - ?network
 networks:
-  gaad:
+  ?network:
     external: true

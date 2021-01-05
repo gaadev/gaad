@@ -2,8 +2,8 @@ version: '3.4'
 services:
   ?module_name:
     image: ?image_path
-#    ports:
-#      - "?port:80"
+    ports:
+      - "9898:9898"
     deploy:
       mode: replicated
       replicas: 1
@@ -20,7 +20,7 @@ services:
         reservations:
           memory: 250M
     networks:
-      - ?network
+      - jshyun_overlay_network
 networks:
-  ?network:
+  jshyun_overlay_network:
     external: true

@@ -1,9 +1,9 @@
 version: '3.4'
 services:
-  core-config:
-    image: harbor.jsy.com/gaad/core-config:bd88d0b_2020.10.24-10.18.16
-#    ports:
-#      - "?port:80"
+  ?module_name:
+    image: ?image_path
+    ports:
+      - "8094:80"
     deploy:
       mode: replicated
       replicas: 1
@@ -20,7 +20,7 @@ services:
         reservations:
           memory: 250M
     networks:
-      - gaad
+      - ?network
 networks:
-  gaad:
+  ?network:
     external: true
